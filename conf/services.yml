@@ -1,0 +1,20 @@
+EmailAddresses:
+  class: Pantono\Email\EmailAddresses
+Email:
+  class: Pantono\Email\Email
+  parameters:
+    - "@Mailer"
+    - :Pantono\Email\Repository\EmailRepository
+    - "@Hydrator"
+    - "@TwigEmail"
+    - "@EmailAddresses"
+Mailer:
+  class: Pantono\Email\Factory\MailerFactory
+  parameters:
+    - $email.dsn
+    - "@EventDispatcher"
+TwigEmail:
+  class: Pantono\Email\Factory\TwigRendererFactory
+  parameters:
+    - $twig.path
+    - $twig-email.options
