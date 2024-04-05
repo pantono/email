@@ -17,7 +17,8 @@
     "pimple/pimple": "^3.5",
     "twig/inky-extra": "^3.8",
     "twig/cssinliner-extra": "^3.8",
-    "pantono/config": "^1.0"
+    "pantono/config": "^1.0",
+    "robmorgan/phinx": "^0.16.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^10",
