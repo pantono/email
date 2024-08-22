@@ -26,7 +26,7 @@ class TwigRendererFactory implements FactoryInterface
     {
         $loader = new FilesystemLoader([
             ApplicationHelper::getApplicationRoot() . '/' . $this->path,
-            ApplicationHelper::getApplicationRoot() . '/vendor/rbg/email/views',
+            ApplicationHelper::getApplicationRoot() . '/vendor/pantono/email/views',
         ]);
 
         $twig = new Environment($loader, $this->options);
