@@ -89,7 +89,10 @@ class EmailAddresses
     {
         $contents = file_get_contents($file);
         foreach (explode(PHP_EOL, $contents) as $domain) {
-            $this->repository->saveDisposableDomain(trim($domain));
+            $domain = trim($domain);
+            if ($domain) {
+                $this->repository->saveDisposableDomain($domain);
+            }
         }
     }
 }
