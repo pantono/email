@@ -24,10 +24,14 @@ class TwigRendererFactory implements FactoryInterface
 
     public function createInstance(): Environment
     {
-        $loader = new FilesystemLoader([
-            ApplicationHelper::getApplicationRoot() . '/' . $this->path,
-            ApplicationHelper::getApplicationRoot() . '/vendor/pantono/email/views',
-        ]);
+        $paths = [];
+        if (file_exists(ApplicationHelper::getApplicationRoot() . '/' . $this->path)) {
+            $paths[] = ApplicationHelper::getApplicationRoot() . '/' . $this->path;
+        }
+        if (file_exists(ApplicationHelper::getApplicationRoot() . '/vendor/pantono/email/views')) {
+            $paths[] = ApplicationHelper::getApplicationRoot() . '/vendor/pantono/email/views';
+        }
+        $loader = new FilesystemLoader($paths);
 
         $twig = new Environment($loader, $this->options);
         $twig->addExtension(new InkyExtension());

@@ -11,6 +11,7 @@ class MessageGenerator
     private Email $mailer;
     private ?Address $from = null;
     private ?Address $replyTo = null;
+    private ?EmailTemplate $template = null;
     private string $twigTemplateFile;
     /**
      * @var Address[]
@@ -95,8 +96,8 @@ class MessageGenerator
     public function generateMessageModel(): EmailMessage
     {
         $message = new EmailMessage();
-        $message->setTextMessage($this->renderedText);
-        $message->setHtmlMessage($this->renderedHtml);
+        $message->setTextMessage($this->getRenderedText());
+        $message->setHtmlMessage($this->getRenderedHtml());
         $message->setSubject($this->getSubject());
         $message->setDateAdded(new \DateTime);
         $message->setFromAddress($this->getFrom()->getAddress());
@@ -120,6 +121,33 @@ class MessageGenerator
         return $this->message;
     }
 
+    public function getTemplate(): ?EmailTemplate
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(?EmailTemplate $template = null): MessageGenerator
+    {
+        $this->template = $template;
+        return $this;
+    }
+
+    public function removeToAddress(string $email): void
+    {
+        $addresses = [];
+        foreach ($this->getToAddresses() as $address) {
+            if ($address->getAddress() !== $email) {
+                $addresses[] = $address;
+            }
+        }
+        $this->toAddresses = $addresses;
+    }
+
+    public function getToAddresses(): array
+    {
+        return $this->toAddresses;
+    }
+
     public function getRenderedText(): string
     {
         return $this->renderedText;
@@ -140,21 +168,5 @@ class MessageGenerator
     {
         $this->renderedHtml = $renderedHtml;
         return $this;
-    }
-
-    public function removeToAddress(string $email): void
-    {
-        $addresses = [];
-        foreach ($this->getToAddresses() as $address) {
-            if ($address->getAddress() !== $email) {
-                $addresses[] = $address;
-            }
-        }
-        $this->toAddresses = $addresses;
-    }
-
-    public function getToAddresses(): array
-    {
-        return $this->toAddresses;
     }
 }

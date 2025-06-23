@@ -8,27 +8,38 @@ use Pantono\Hydrator\Hydrator;
 use Twig\Environment;
 use Pantono\Email\Model\EmailSend;
 use Pantono\Email\Model\EmailMessage;
-use Pantono\Contracts\Locations\BrandInterface;
 use Pantono\Email\Model\MessageGenerator;
 use Pantono\Email\Exception\SubjectIsRequiredException;
 use Pantono\Email\Exception\ToAddressRequired;
 use Pantono\Email\Exception\InvalidToAddress;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Pantono\Email\Event\PreEmailSendEvent;
+use Pantono\Email\Event\PostEmailSendEvent;
 
 class Email
 {
     private Mailer $mailer;
     private EmailRepository $repository;
     private Hydrator $hydrator;
-    private Environment $twig;
     private EmailAddresses $emailAddresses;
+    private EventDispatcher $dispatcher;
+    private EmailTemplates $templates;
 
-    public function __construct(Mailer $mailer, EmailRepository $repository, Hydrator $hydrator, Environment $twig, EmailAddresses $emailAddresses)
+    public function __construct(
+        Mailer          $mailer,
+        EmailRepository $repository,
+        Hydrator        $hydrator,
+        EmailAddresses  $emailAddresses,
+        EventDispatcher $dispatcher,
+        EmailTemplates  $templates
+    )
     {
         $this->mailer = $mailer;
         $this->repository = $repository;
         $this->hydrator = $hydrator;
-        $this->twig = $twig;
         $this->emailAddresses = $emailAddresses;
+        $this->dispatcher = $dispatcher;
+        $this->templates = $templates;
     }
 
     public function getEmailSendById(int $id): ?EmailSend
@@ -88,6 +99,9 @@ class Email
             $mailerSend->html($this->replaceTracking($message->getHtmlMessage(), $send->getTrackingKey()));
             try {
                 $mailerSend->ensureValidity();
+                $preSendEvent = new PreEmailSendEvent();
+                $preSendEvent->setSend($send);
+                $this->dispatcher->dispatch($preSendEvent);
                 $this->mailer->send($mailerSend);
                 $send->setStatus('sent');
             } catch (\Exception $e) {
@@ -95,6 +109,9 @@ class Email
                 $send->setErrorMessage($e->getMessage());
             }
             $this->repository->saveEmailSend($send);
+            $postSendEvent = new PostEmailSendEvent();
+            $postSendEvent->setSend($send);
+            $this->dispatcher->dispatch($postSendEvent);
         }
     }
 
@@ -119,7 +136,7 @@ class Email
 
     public function renderEmail(MessageGenerator $email): void
     {
-        $htmlContent = $this->twig->render($email->getTwigTemplateFile(), $email->getContext());
+        $htmlContent = $this->templates->renderTemplate($email->getTemplate(), $email->getContext());
         $email->setRenderedHtml($htmlContent);
         $textContent = $this->generatePlainText($htmlContent);
         $email->setRenderedText($textContent);
@@ -133,8 +150,8 @@ class Email
         $plainText = trim($plainText);
 
         $lines = explode("\n", $plainText);
-        $lines = array_filter($lines, function ($line) {
-            return trim($line);
+        $lines = array_filter($lines, function (string $line): bool {
+            return trim($line) ? true : false;
         });
         array_walk($lines, function (&$line) {
             $line = trim($line);
@@ -147,5 +164,10 @@ class Email
     private function replaceTracking(string $content, string $code): string
     {
         return str_replace('__TRACKING_CODE__', $code, $content);
+    }
+
+    public function addLogToSend(EmailSend $send, string $entry): void
+    {
+        $this->repository->addLogToSend($send, $entry);
     }
 }

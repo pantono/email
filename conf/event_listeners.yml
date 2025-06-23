@@ -1,0 +1,2 @@
+SaveEmailTemplateHistory:
+  class: Pantono\Email\Events\EmailTemplateHistoryEvents

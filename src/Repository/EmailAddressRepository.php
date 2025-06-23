@@ -25,4 +25,19 @@ class EmailAddressRepository extends MysqlRepository
             $address->setId($id);
         }
     }
+
+    public function getConfig(): array
+    {
+        return $this->selectSingleRowFromQuery($this->getDb()->select()->from('email_config'));
+    }
+
+    public function getDisposableEmailDomain(string $domain): ?array
+    {
+        return $this->selectSingleRow('email_disposable_domain', 'domain', $domain);
+    }
+
+    public function saveDisposableDomain(string $domain): void
+    {
+        $this->insertIgnore('email_disposable_domain', ['domain' => $domain]);
+    }
 }

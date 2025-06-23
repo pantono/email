@@ -2,12 +2,6 @@ EmailAddresses:
   class: Pantono\Email\EmailAddresses
 Email:
   class: Pantono\Email\Email
-  parameters:
-    - "@Mailer"
-    - :Pantono\Email\Repository\EmailRepository
-    - "@Hydrator"
-    - "@TwigEmail"
-    - "@EmailAddresses"
 Mailer:
   class: Pantono\Email\Factory\MailerFactory
   parameters:
@@ -18,3 +12,12 @@ TwigEmail:
   parameters:
     - $twig.path
     - $twig-email.options
+EmailValidator:
+  class: Egulias\EmailValidator\EmailValidator
+EmailTemplates:
+  class: Pantono\Email\EmailTemplates
+  parameters:
+    - :Pantono\Email\Repository\EmailTemplatesRepository
+    - "@Hydrator"
+    - "@EventDispatcher"
+    - "@TwigEmail"

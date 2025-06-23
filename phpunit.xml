@@ -3,8 +3,10 @@
          colors="true"
          failOnWarning="true"
          stopOnFailure="true"
+         displayDetailsOnPhpunitDeprecations="true"
          displayDetailsOnTestsThatTriggerWarnings="true"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd"
+         failOnDeprecation="true"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          cacheDirectory=".phpunit.cache">
     <coverage includeUncoveredFiles="true"/>
     <testsuite name="Email Test Suite">

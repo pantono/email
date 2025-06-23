@@ -15,7 +15,7 @@ class EmailRepository extends MysqlRepository
 
     public function getEmailSendById(int $id): ?array
     {
-        return $this->selectSingleRow('email_sends', 'id', $id);
+        return $this->selectSingleRow('email_send', 'id', $id);
     }
 
     public function saveEmailSend(EmailSend $send): void
@@ -31,7 +31,7 @@ class EmailRepository extends MysqlRepository
             'complained' => $send->isComplained() ? 1 : 0,
             'tracking_key' => $send->getTrackingKey()
         ];
-        $id = $this->insertOrUpdate('email_sends', 'id', $send->getId(), $data);
+        $id = $this->insertOrUpdate('email_send', 'id', $send->getId(), $data);
         if ($id) {
             $send->setId($id);
         }
@@ -55,6 +55,15 @@ class EmailRepository extends MysqlRepository
 
     public function getSendsForEmail(EmailMessage $message): array
     {
-        return $this->selectRowsByValues('email_sends', ['email_message_id' => $message->getId()]);
+        return $this->selectRowsByValues('email_send', ['email_message_id' => $message->getId()]);
+    }
+
+    public function addLogToSend(EmailSend $send, string $entry): void
+    {
+        $this->getDb()->insert('email_send_log', [
+            'send_id' => $send->getId(),
+            'date' => (new \DateTime)->format('Y-m-d H:i:s'),
+            'entry' => $entry
+        ]);
     }
 }
