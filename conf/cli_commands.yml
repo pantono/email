@@ -1,0 +1,2 @@
+DownloadDisposableEmailDomains:
+  class: Pantono\Email\Command\DownloadDisposableDomainList

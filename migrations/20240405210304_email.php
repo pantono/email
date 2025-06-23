@@ -9,7 +9,7 @@ final class Email extends AbstractMigration
     public function change(): void
     {
         $this->table('email_disposable_domain', ['id' => false, 'primary_key' => ['domain']])
-            ->addColumn('domain', 'string')
+            ->addColumn('domain', 'string', ['null' => false])
             ->create();
 
         $this->table('email_config', ['id' => false])
@@ -17,6 +17,13 @@ final class Email extends AbstractMigration
             ->addColumn('check_smtp', 'boolean')
             ->addColumn('check_disposable_domain', 'boolean')
             ->create();
+
+        if ($this->isMigratingUp()) {
+            $this->table('email_config')
+                ->insert([
+                    ['check_dns' => 1, 'check_smtp' => 0, 'check_disposable_domain' => 1]
+                ])->saveData();
+        }
 
         $this->table('email_address')
             ->addColumn('email', 'string')
@@ -87,7 +94,7 @@ final class Email extends AbstractMigration
             ->create();
 
         $this->table('email_template_block_field')
-            ->addColumn('block_type_id', 'integer')
+            ->addColumn('block_type_id', 'integer', ['signed' => false])
             ->addColumn('name', 'string')      // e.g., 'content', 'bgcolor', 'align'
             ->addColumn('label', 'string')     // Human readable label
             ->addColumn('type', 'string')      // text, number, color, select, etc.
