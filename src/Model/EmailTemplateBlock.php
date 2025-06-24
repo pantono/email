@@ -15,7 +15,7 @@ class EmailTemplateBlock
     private ?int $id = null;
     private int $templateId;
     #[Locator(methodName: 'getBlockTypeById', className: EmailTemplates::class), FieldName('block_type_id')]
-    private EmailTemplateBlockType $blockType;
+    private ?EmailTemplateBlockType $blockType = null;
     private int $displayOrder;
     #[Filter('json_decode')]
     private array $fieldValues;
@@ -40,14 +40,15 @@ class EmailTemplateBlock
         $this->templateId = $templateId;
     }
 
-    public function getBlockType(): EmailTemplateBlockType
+    public function getBlockType(): ?EmailTemplateBlockType
     {
         return $this->blockType;
     }
 
-    public function setBlockType(EmailTemplateBlockType $blockType): void
+    public function setBlockType(?EmailTemplateBlockType $blockType): EmailTemplateBlock
     {
         $this->blockType = $blockType;
+        return $this;
     }
 
     public function getDisplayOrder(): int
