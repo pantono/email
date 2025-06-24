@@ -28,10 +28,9 @@ class EmailRepository extends MysqlRepository
             'date_sent' => $send->getDateSent()?->format('Y-m-d H:i:s'),
             'status' => $send->getStatus(),
             'error_message' => $send->getErrorMessage(),
-            'complained' => $send->isComplained() ? 1 : 0,
             'tracking_key' => $send->getTrackingKey()
         ];
-        $id = $this->insertOrUpdate('email_send', 'id', $send->getId(), $data);
+        $id = $this->insertOrUpdate('email_send', 'id', $send->getId(), $send->getAllData());
         if ($id) {
             $send->setId($id);
         }

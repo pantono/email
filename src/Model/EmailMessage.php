@@ -122,11 +122,11 @@ class EmailMessage
     public function createEmailSend(string $to, ?string $toName = null): EmailSend
     {
         $send = new EmailSend();
+        $send->setEmailMessageId($this->getId());
         $send->setMessage($this);
         $send->setToAddress($to);
         $send->setTrackingKey(uniqid());
         $send->setToName($toName ?? null);
-        $send->setComplained(false);
         $this->sends[] = $send;
 
         return $send;

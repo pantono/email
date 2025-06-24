@@ -4,18 +4,26 @@ namespace Pantono\Email\Model;
 
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Pantono\Database\Traits\SavableModel;
+use Pantono\Contracts\Attributes\Locator;
+use Pantono\Contracts\Attributes\FieldName;
+use Pantono\Contracts\Attributes\Lazy;
+use Pantono\Contracts\Attributes\NoSave;
 
 class EmailSend
 {
+    use SavableModel;
+
     private ?int $id = null;
-    private EmailMessage $message;
+    private int $emailMessageId;
+    #[Locator(methodName: 'getEmailMessageById', className: \Pantono\Email\Email::class), FieldName('email_message_id'), Lazy, NoSave]
+    private ?EmailMessage $message = null;
     private string $messageId;
     private string $toAddress;
     private string $toName;
     private ?\DateTimeImmutable $dateSent = null;
     private string $status;
     private ?string $errorMessage = null;
-    private bool $complained;
     private string $trackingKey;
 
     public function getId(): ?int
@@ -28,12 +36,22 @@ class EmailSend
         $this->id = $id;
     }
 
-    public function getMessage(): EmailMessage
+    public function getEmailMessageId(): int
+    {
+        return $this->emailMessageId;
+    }
+
+    public function setEmailMessageId(int $emailMessageId): void
+    {
+        $this->emailMessageId = $emailMessageId;
+    }
+
+    public function getMessage(): ?EmailMessage
     {
         return $this->message;
     }
 
-    public function setMessage(EmailMessage $message): void
+    public function setMessage(?EmailMessage $message): void
     {
         $this->message = $message;
     }
@@ -78,16 +96,6 @@ class EmailSend
         $this->errorMessage = $errorMessage;
     }
 
-    public function isComplained(): bool
-    {
-        return $this->complained;
-    }
-
-    public function setComplained(bool $complained): void
-    {
-        $this->complained = $complained;
-    }
-
     public function getTrackingKey(): string
     {
         return $this->trackingKey;
@@ -123,3 +131,4 @@ class EmailSend
         $this->toName = $toName;
     }
 }
+
