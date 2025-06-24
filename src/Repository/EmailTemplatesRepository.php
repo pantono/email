@@ -82,4 +82,9 @@ class EmailTemplatesRepository extends MysqlRepository
             }
         }
     }
+
+    public function getBlocksForTemplate(EmailTemplate $template): array
+    {
+        return $this->selectRowsByValues('email_template_block', ['template_id' => $template->getId()], 'display_order');
+    }
 }

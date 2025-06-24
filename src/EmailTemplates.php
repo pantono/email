@@ -15,6 +15,7 @@ use Twig\Environment;
 use Pantono\Email\Exception\MissingContext;
 use Pantono\Email\Event\PreEmailBlockTypeSaveEvent;
 use Pantono\Email\Event\PostEmailBlockTypeSaveEvent;
+use Pantono\Email\Model\EmailTemplateBlock;
 
 class EmailTemplates
 {
@@ -39,6 +40,14 @@ class EmailTemplates
     public function getBlockTypeById(int $id): ?EmailTemplateBlockType
     {
         return $this->hydrator->hydrate(EmailTemplateBlockType::class, $this->repository->getBlockById($id));
+    }
+
+    /**
+     * @return EmailTemplateBlock[]
+     */
+    public function getBlocksForTemplate(EmailTemplate $template): array
+    {
+        return $this->hydrator->hydrateSet(EmailTemplateBlock::class, $this->repository->getBlocksForTemplate($template));
     }
 
     /**

@@ -5,7 +5,6 @@ namespace Pantono\Email;
 use Symfony\Component\Mailer\Mailer;
 use Pantono\Email\Repository\EmailRepository;
 use Pantono\Hydrator\Hydrator;
-use Twig\Environment;
 use Pantono\Email\Model\EmailSend;
 use Pantono\Email\Model\EmailMessage;
 use Pantono\Email\Model\MessageGenerator;
