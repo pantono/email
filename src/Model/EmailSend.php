@@ -23,7 +23,7 @@ class EmailSend
     private string $toAddress;
     private string $toName;
     private ?\DateTimeImmutable $dateSent = null;
-    #[Locator(methodName: 'getStatusById', className: Email::class), FieldName('status_id')]
+    #[Locator(methodName: 'getStatusById', className: Email::class)]
     private ?EmailStatus $status = null;
     private ?string $errorMessage = null;
     private string $trackingKey;
@@ -88,7 +88,7 @@ class EmailSend
         $this->status = $status;
         return $this;
     }
-    
+
     public function getErrorMessage(): ?string
     {
         return $this->errorMessage;
