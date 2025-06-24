@@ -65,4 +65,9 @@ class EmailRepository extends MysqlRepository
             'entry' => $entry
         ]);
     }
+
+    public function getStatusById(int $id): ?array
+    {
+        return $this->selectSingleRow('email_status', 'id', $id);
+    }
 }

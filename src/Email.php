@@ -14,6 +14,7 @@ use Pantono\Email\Exception\InvalidToAddress;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Pantono\Email\Event\PreEmailSendEvent;
 use Pantono\Email\Event\PostEmailSendEvent;
+use Pantono\Email\Model\EmailStatus;
 
 class Email
 {
@@ -23,6 +24,13 @@ class Email
     private EmailAddresses $emailAddresses;
     private EventDispatcher $dispatcher;
     private EmailTemplates $templates;
+    public const STATUS_PENDING = 1;
+    public const STATUS_SENT = 2;
+    public const STATUS_DELIVERED = 3;
+    public const STATUS_SOFT_BOUNCE = 4;
+    public const STATUS_HARD_BOUNCE = 5;
+    public const STATUS_COMPLAINED = 6;
+    public const STATUS_ERROR = 7;
 
     public function __construct(
         Mailer          $mailer,
@@ -88,10 +96,22 @@ class Email
         $this->renderEmail($email);
         $message = $email->generateMessageModel();
         $this->repository->saveMessage($message);
+        $pendingStatus = $this->getStatusById(self::STATUS_PENDING);
+        if (!$pendingStatus) {
+            throw new \RuntimeException('Pending status does not exist');
+        }
+        $sentStatus = $this->getStatusById(self::STATUS_SENT);
+        if (!$sentStatus) {
+            throw new \RuntimeException('Sent status does not exist');
+        }
+        $errorStatus = $this->getStatusById(self::STATUS_ERROR);
+        if (!$errorStatus) {
+            throw new \RuntimeException('Error status does not exist');
+        }
         foreach ($email->getToAddresses() as $address) {
             $send = $message->createEmailSend($address->getAddress(), $address->getName());
             $send->setDateSent(new \DateTimeImmutable());
-            $send->setStatus('created');
+            $send->setStatus($pendingStatus);
             $mailerSend = $send->createSymfonyModel();
             $send->setMessageId($mailerSend->generateMessageId());
             $this->repository->saveEmailSend($send);
@@ -102,9 +122,9 @@ class Email
                 $preSendEvent->setSend($send);
                 $this->dispatcher->dispatch($preSendEvent);
                 $this->mailer->send($mailerSend);
-                $send->setStatus('sent');
+                $send->setStatus($sentStatus);
             } catch (\Exception $e) {
-                $send->setStatus('error');
+                $send->setStatus($errorStatus);
                 $send->setErrorMessage($e->getMessage());
             }
             $this->repository->saveEmailSend($send);
@@ -168,5 +188,10 @@ class Email
     public function addLogToSend(EmailSend $send, string $entry): void
     {
         $this->repository->addLogToSend($send, $entry);
+    }
+
+    public function getStatusById(int $id): ?EmailStatus
+    {
+        return $this->hydrator->hydrate(EmailStatus::class, $this->repository->getStatusById($id));
     }
 }

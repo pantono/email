@@ -59,6 +59,7 @@ final class Email extends AbstractMigration
                     ['name' => 'Soft Bounce', 'bounced' => 1, 'complained' => 0, 'sent' => 1],
                     ['name' => 'Hard Bounce', 'bounced' => 1, 'complained' => 0, 'sent' => 1],
                     ['name' => 'Complained', 'bounced' => 0, 'complained' => 1, 'sent' => 1],
+                    ['name' => 'Error', 'bounced' => 0, 'complained' => 0, 'sent' => 0],
                 ])->saveData();
         }
 

@@ -3,12 +3,13 @@
 namespace Pantono\Email\Model;
 
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Email as SymfonyModel;
 use Pantono\Database\Traits\SavableModel;
 use Pantono\Contracts\Attributes\Locator;
 use Pantono\Contracts\Attributes\FieldName;
 use Pantono\Contracts\Attributes\Lazy;
 use Pantono\Contracts\Attributes\NoSave;
+use Pantono\Email\Email;
 
 class EmailSend
 {
@@ -16,13 +17,14 @@ class EmailSend
 
     private ?int $id = null;
     private int $emailMessageId;
-    #[Locator(methodName: 'getEmailMessageById', className: \Pantono\Email\Email::class), FieldName('email_message_id'), Lazy, NoSave]
+    #[Locator(methodName: 'getEmailMessageById', className: Email::class), FieldName('email_message_id'), Lazy, NoSave]
     private ?EmailMessage $message = null;
     private string $messageId;
     private string $toAddress;
     private string $toName;
     private ?\DateTimeImmutable $dateSent = null;
-    private string $status;
+    #[Locator(methodName: 'getStatusById', className: Email::class), FieldName('status_id')]
+    private ?EmailStatus $status = null;
     private ?string $errorMessage = null;
     private string $trackingKey;
 
@@ -76,16 +78,17 @@ class EmailSend
         $this->dateSent = $dateSent;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ?EmailStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): void
+    public function setStatus(?EmailStatus $status): EmailSend
     {
         $this->status = $status;
+        return $this;
     }
-
+    
     public function getErrorMessage(): ?string
     {
         return $this->errorMessage;
@@ -106,7 +109,7 @@ class EmailSend
         $this->trackingKey = $trackingKey;
     }
 
-    public function createSymfonyModel(): Email
+    public function createSymfonyModel(): SymfonyModel
     {
         return $this->message->createSymfonyMessage()->addTo(new Address($this->getToAddress(), $this->getToName()));
     }
