@@ -4,6 +4,8 @@ Email:
   class: Pantono\Email\Email
 Mailer:
   class: Pantono\Email\Factory\MailerFactory
+  aliases:
+    - Symfony\Component\Mailer\Mailer
   parameters:
     - $email.dsn
     - "@EventDispatcher"
