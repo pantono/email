@@ -39,7 +39,7 @@ class EmailTemplates
 
     public function getBlockTypeById(int $id): ?EmailTemplateBlockType
     {
-        return $this->hydrator->hydrate(EmailTemplateBlockType::class, $this->repository->getBlockById($id));
+        return $this->hydrator->hydrate(EmailTemplateBlockType::class, $this->repository->getBlockTypeById($id));
     }
 
     /**
