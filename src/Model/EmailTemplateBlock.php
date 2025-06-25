@@ -19,6 +19,7 @@ class EmailTemplateBlock
     private int $displayOrder;
     #[Filter('json_decode')]
     private array $fieldValues;
+    private ?int $parentBlockId = null;
 
     public function getId(): ?int
     {
@@ -74,5 +75,16 @@ class EmailTemplateBlock
     public function getFieldValueByName(string $name): mixed
     {
         return $this->getFieldValues()[$name] ?? null;
+    }
+
+    public function getParentBlockId(): ?int
+    {
+        return $this->parentBlockId;
+    }
+
+    public function setParentBlockId(?int $parentBlockId): EmailTemplateBlock
+    {
+        $this->parentBlockId = $parentBlockId;
+        return $this;
     }
 }

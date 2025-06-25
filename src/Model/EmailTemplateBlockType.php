@@ -126,4 +126,12 @@ class EmailTemplateBlockType
     {
         $this->fields = $fields;
     }
+
+    public function isChildAllowed(string $child): bool
+    {
+        if (in_array('*', $this->allowedChildren)) {
+            return true;
+        }
+        return in_array($child, $this->allowedChildren);
+    }
 }

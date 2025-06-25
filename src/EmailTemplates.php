@@ -104,10 +104,29 @@ class EmailTemplates
         }
         $content = '';
         foreach ($template->getBlocks() as $block) {
-            $template = $this->twig->createTemplate($block->getBlockType()->getTemplate());
-            $content .= $this->twig->render($template, $context);
+            if ($block->getParentBlockId()) {
+                continue;
+            }
+            $content .= $this->renderBlock($block, $template, $context);
+
         }
         return $this->twig->render('email/inky-template.twig', ['content' => $content]);
+    }
+
+    public function renderBlock(EmailTemplateBlock $block, EmailTemplate $template, array $context = []): string
+    {
+        $children = '';
+        foreach ($template->getBlocks() as $templateBlock) {
+            if ($templateBlock->getParentBlockId() === $block->getId()) {
+                if (!$block->getBlockType()->isChildAllowed($templateBlock->getBlockType()->getName())) {
+                    throw new \RuntimeException('Block ' . $templateBlock->getBlockType()->getName() . ' is not allowed to be a child of ' . $block->getBlockType()->getName());
+                }
+                $children .= $this->renderBlock($templateBlock, $template, $context);
+            }
+        }
+        $context['content'] = $children;
+        $template = $this->twig->createTemplate($block->getBlockType()->getTemplate());
+        return $this->twig->render($template, $context);
     }
 
     public function addHistoryToBlock(EmailTemplateBlockType $block, UserInterface $user, string $entry): void
