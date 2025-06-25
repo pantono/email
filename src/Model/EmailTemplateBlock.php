@@ -7,6 +7,7 @@ use Pantono\Contracts\Attributes\Locator;
 use Pantono\Email\EmailTemplates;
 use Pantono\Contracts\Attributes\FieldName;
 use Pantono\Database\Traits\SavableModel;
+use Twig\Environment;
 
 class EmailTemplateBlock
 {
@@ -86,5 +87,11 @@ class EmailTemplateBlock
     {
         $this->parentBlockId = $parentBlockId;
         return $this;
+    }
+
+    public function render(Environment $twig, array $context): string
+    {
+        $context = array_merge($context, $this->getFieldValues());
+        return $twig->render($twig->createTemplate($this->getBlockType()->getTemplate()), $context);
     }
 }

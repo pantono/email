@@ -125,8 +125,7 @@ class EmailTemplates
             }
         }
         $context['content'] = $children;
-        $template = $this->twig->createTemplate($block->getBlockType()->getTemplate());
-        return $this->twig->render($template, $context);
+        return $block->render($this->twig, $context);
     }
 
     public function addHistoryToBlock(EmailTemplateBlockType $block, UserInterface $user, string $entry): void
