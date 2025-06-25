@@ -124,7 +124,7 @@ class EmailTemplates
                 $children .= $this->renderBlock($templateBlock, $template, $context);
             }
         }
-        $context['content'] = $children;
+        $context['children'] = $children;
         return $block->render($this->twig, $context);
     }
 
