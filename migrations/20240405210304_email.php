@@ -150,8 +150,16 @@ final class Email extends AbstractMigration
             $this->table('email_template_block_type')
                 ->insert([
                     [
+                        'name' => 'container',
+                        'description' => 'Container',
+                        'category' => 'Layout',
+                        'template' => '<container>{{content}}</container>',
+                        'system' => true,
+                        'allowed_children' => json_encode(['columns', 'row']),
+                    ],
+                    [
                         'name' => 'row',
-                        'description' => 'Foundation row container',
+                        'description' => 'Row of content',
                         'category' => 'Layout',
                         'template' => '<row>{{content}}</row>',
                         'system' => true,
@@ -159,7 +167,7 @@ final class Email extends AbstractMigration
                     ],
                     [
                         'name' => 'columns',
-                        'description' => 'Foundation columns',
+                        'description' => 'Column',
                         'category' => 'Layout',
                         'template' => '<columns large="{{columns}}">{{content}}</columns>',
                         'system' => true,
