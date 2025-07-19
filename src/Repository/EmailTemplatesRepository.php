@@ -87,4 +87,19 @@ class EmailTemplatesRepository extends MysqlRepository
     {
         return $this->selectRowsByValues('email_template_block', ['template_id' => $template->getId()], 'display_order');
     }
+
+    public function getTemplateForType(string $typeName): ?array
+    {
+        $select = $this->getDb()->select()->from('email_template')
+            ->joinInner('email_mapping', 'email_mapping.template_id=email_template.id', [])
+            ->where('email_mapping.type_name=?', $typeName);
+
+        return $this->selectSingleRowFromQuery($select);
+    }
+
+    public function saveMappingForType(string $type, EmailTemplate $template): void
+    {
+        $this->getDb()->delete('email_mapping', ['type_name=?', $type]);
+        $this->getDb()->insert('email_mapping', ['type_name' => $type, 'template_id' => $template->getId()]);
+    }
 }

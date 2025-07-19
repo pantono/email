@@ -132,4 +132,14 @@ class EmailTemplates
     {
         $this->repository->addHistoryToBlock($block, $user, $entry);
     }
+
+    public function getTemplateForType(string $typeName): ?EmailTemplate
+    {
+        return $this->hydrator->hydrate(EmailTemplate::class, $this->repository->getTemplateForType($typeName));
+    }
+
+    public function saveTemplateMapping(string $type, EmailTemplate $template): void
+    {
+        $this->repository->saveMappingForType($type, $template);
+    }
 }

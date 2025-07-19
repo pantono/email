@@ -190,5 +190,12 @@ final class Email extends AbstractMigration
                 ])
                 ->save();
         }
+
+        $this->table('email_mapping', ['id' => false])
+            ->addColumn('type_name', 'string')
+            ->addColumn('template_id', 'integer', ['signed' => false])
+            ->addForeignKey('template_id', 'email_template', 'id')
+            ->addIndex('type_name', ['unique' => true])
+            ->create();
     }
 }
