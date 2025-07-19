@@ -15,6 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Pantono\Email\Event\PreEmailSendEvent;
 use Pantono\Email\Event\PostEmailSendEvent;
 use Pantono\Email\Model\EmailStatus;
+use Pantono\Email\Model\EmailTemplate;
 
 class Email
 {
@@ -65,6 +66,13 @@ class Email
     public function getSendsForEmail(EmailMessage $message): array
     {
         return $this->hydrator->hydrateSet(EmailSend::class, $this->repository->getSendsForEmail($message));
+    }
+
+    public function createMessageFromTemplate(EmailTemplate $template): MessageGenerator
+    {
+        $html = $this->templates->renderTemplate($template);
+        $text = strip_tags($html);
+        return $this->createMessage()->setRenderedHtml($html)->setRenderedText($text);
     }
 
     public function sendInkyTemplate(string $toAddress, string $toName, string $inkyTemplate, array $variables = [], ?string $fromAddress = null, ?string $fromName = null): EmailMessage
