@@ -68,6 +68,15 @@ class Email
         return $this->hydrator->hydrateSet(EmailSend::class, $this->repository->getSendsForEmail($message));
     }
 
+    public function createMessageForType(string $type): ?MessageGenerator
+    {
+        $template = $this->templates->getTemplateForType($type);
+        if (!$template) {
+            return null;
+        }
+        return $this->createMessageFromTemplate($template);
+    }
+
     public function createMessageFromTemplate(EmailTemplate $template): MessageGenerator
     {
         $html = $this->templates->renderTemplate($template);
