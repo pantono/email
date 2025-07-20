@@ -7,6 +7,7 @@ use Pantono\Contracts\Locator\UserInterface;
 use Pantono\Contracts\Attributes\Locator;
 use Pantono\Email\EmailTemplates;
 use Pantono\Contracts\Attributes\FieldName;
+use Pantono\Contracts\Attributes\Filter;
 
 class EmailTemplate
 {
@@ -18,6 +19,7 @@ class EmailTemplate
     private string $category;
     private \DateTimeInterface $dateCreated;
     private \DateTimeInterface $dateUpdated;
+    #[Filter('json_decode')]
     private array $requiredContext = [];
     /**
      * @var EmailTemplateBlock[]
