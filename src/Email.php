@@ -81,7 +81,7 @@ class Email
     {
         $html = $this->templates->renderTemplate($template);
         $text = strip_tags($html);
-        return $this->createMessage()->setRenderedHtml($html)->setRenderedText($text);
+        return $this->createMessage()->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
     }
 
     public function sendInkyTemplate(string $toAddress, string $toName, string $inkyTemplate, array $variables = [], ?string $fromAddress = null, ?string $fromName = null): EmailMessage
