@@ -39,7 +39,7 @@ class Email
         Hydrator        $hydrator,
         EmailAddresses  $emailAddresses,
         EventDispatcher $dispatcher,
-        EmailTemplates  $templates
+        EmailTemplates  $templates,
     )
     {
         $this->mailer = $mailer;
@@ -104,7 +104,8 @@ class Email
 
     public function createMessage(): MessageGenerator
     {
-        return new MessageGenerator($this);
+        $config = $this->getEmailConfig();
+        return (new MessageGenerator($this))->from($config['default_from_address'], $config['default_from_name']);
     }
 
     public function sendEmail(MessageGenerator $email): void
@@ -210,5 +211,20 @@ class Email
     public function getStatusById(int $id): ?EmailStatus
     {
         return $this->hydrator->hydrate(EmailStatus::class, $this->repository->getStatusById($id));
+    }
+
+    private function getEmailConfig(): array
+    {
+        $config = $this->repository->getConfig();
+        if ($config === null) {
+            $config = [
+                'check_dns' => '1',
+                'check_smtp' => '0',
+                'check_disposable_domain' => 1,
+                'default_from_name' => 'Pantono',
+                'default_from_address' => 'noreply@pantono.com',
+            ];
+        }
+        return $config;
     }
 }

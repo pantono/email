@@ -16,12 +16,14 @@ final class Email extends AbstractMigration
             ->addColumn('check_dns', 'boolean')
             ->addColumn('check_smtp', 'boolean')
             ->addColumn('check_disposable_domain', 'boolean')
+            ->addColumn('default_from_address', 'string', ['null' => true])
+            ->addColumn('default_from_name', 'string', ['null' => true])
             ->create();
 
         if ($this->isMigratingUp()) {
             $this->table('email_config')
                 ->insert([
-                    ['check_dns' => 1, 'check_smtp' => 0, 'check_disposable_domain' => 1]
+                    ['check_dns' => 1, 'check_smtp' => 0, 'check_disposable_domain' => 1, 'default_from_name' => 'Pantono', 'default_from_address' => 'noreply@pantono.com']
                 ])->saveData();
         }
 

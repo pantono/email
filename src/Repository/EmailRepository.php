@@ -70,4 +70,10 @@ class EmailRepository extends MysqlRepository
     {
         return $this->selectSingleRow('email_status', 'id', $id);
     }
+
+    public function getConfig():?array
+    {
+        $select = $this->getDb()->select()->from('email_config');
+        return $this->selectSingleRowFromQuery($select);
+    }
 }
