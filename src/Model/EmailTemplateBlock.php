@@ -91,7 +91,17 @@ class EmailTemplateBlock
 
     public function render(Environment $twig, array $context): string
     {
-        $context = array_merge($context, $this->getFieldValues());
+        $renderedFieldValues = [];
+        foreach ($this->getFieldValues() as $key => $value) {
+            if (is_string($value)) {
+                $renderedFieldValues[$key] = $twig->createTemplate($value)->render($context);
+            } else {
+                $renderedFieldValues[$key] = $value;
+            }
+        }
+
+        $context = array_merge($context, $renderedFieldValues);
+
         return $twig->render($twig->createTemplate($this->getBlockType()->getTemplate()), $context);
     }
 }
