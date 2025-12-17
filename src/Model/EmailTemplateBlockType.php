@@ -19,7 +19,7 @@ class EmailTemplateBlockType
     private string $template;
     private bool $system;
     #[Filter('json_decode')]
-    private array $allowedChildren;
+    private ?array $allowedChildren = null;
     private ?int $maxChildren = null;
     /**
      * @var EmailTemplateBlockField[]
@@ -97,14 +97,15 @@ class EmailTemplateBlockType
         $this->system = $system;
     }
 
-    public function getAllowedChildren(): array
+    public function getAllowedChildren(): ?array
     {
         return $this->allowedChildren;
     }
 
-    public function setAllowedChildren(array $allowedChildren): void
+    public function setAllowedChildren(?array $allowedChildren): EmailTemplateBlockType
     {
         $this->allowedChildren = $allowedChildren;
+        return $this;
     }
 
     public function getMaxChildren(): ?int
