@@ -3,8 +3,9 @@
 namespace Pantono\Email\Filter;
 
 use Pantono\Database\Traits\Pageable;
+use Pantono\Contracts\Filter\PageableInterface;
 
-class EmailTemplateBlockFilter
+class EmailTemplateBlockFilter implements PageableInterface
 {
     use Pageable;
 
