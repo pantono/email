@@ -2,15 +2,15 @@
 
 namespace Pantono\Email\Filter;
 
-use Pantono\Contracts\Filter\PageableInterface;
 use Pantono\Database\Traits\Pageable;
 
-class EmailTemplateFilter implements PageableInterface
+class EmailTemplateBlockFilter
 {
     use Pageable;
 
     private ?string $search = null;
     private ?string $category = null;
+    private ?string $contentSearch = null;
 
     public function getSearch(): ?string
     {
@@ -30,5 +30,15 @@ class EmailTemplateFilter implements PageableInterface
     public function setCategory(?string $category): void
     {
         $this->category = $category;
+    }
+
+    public function getContentSearch(): ?string
+    {
+        return $this->contentSearch;
+    }
+
+    public function setContentSearch(?string $contentSearch): void
+    {
+        $this->contentSearch = $contentSearch;
     }
 }

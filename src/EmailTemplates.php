@@ -17,6 +17,7 @@ use Pantono\Email\Event\PreEmailBlockTypeSaveEvent;
 use Pantono\Email\Event\PostEmailBlockTypeSaveEvent;
 use Pantono\Email\Model\EmailTemplateBlock;
 use Pantono\Email\Filter\EmailTemplateFilter;
+use Pantono\Email\Filter\EmailTemplateBlockFilter;
 
 class EmailTemplates
 {
@@ -44,6 +45,14 @@ class EmailTemplates
     public function getTemplatesByFilter(EmailTemplateFilter $filter): array
     {
         return $this->hydrator->hydrateSet(EmailTemplate::class, $this->repository->getEmailTemplatesByFilter($filter));
+    }
+
+    /**
+     * @return EmailTemplateBlock[]
+     */
+    public function getTemplateBlockTypesByFilter(EmailTemplateBlockFilter $filter): array
+    {
+        return $this->hydrator->hydrateSet(EmailTemplateBlock::class, $this->repository->getEmailTemplateBlockTypesByFilter($filter));
     }
 
 
