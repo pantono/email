@@ -48,11 +48,11 @@ class EmailTemplates
     }
 
     /**
-     * @return EmailTemplateBlock[]
+     * @return EmailTemplateBlockType[]
      */
     public function getTemplateBlockTypesByFilter(EmailTemplateBlockFilter $filter): array
     {
-        return $this->hydrator->hydrateSet(EmailTemplateBlock::class, $this->repository->getEmailTemplateBlockTypesByFilter($filter));
+        return $this->hydrator->hydrateSet(EmailTemplateBlockType::class, $this->repository->getEmailTemplateBlockTypesByFilter($filter));
     }
 
 
