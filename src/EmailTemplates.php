@@ -16,6 +16,7 @@ use Pantono\Email\Exception\MissingContext;
 use Pantono\Email\Event\PreEmailBlockTypeSaveEvent;
 use Pantono\Email\Event\PostEmailBlockTypeSaveEvent;
 use Pantono\Email\Model\EmailTemplateBlock;
+use Pantono\Email\Filter\EmailTemplateFilter;
 
 class EmailTemplates
 {
@@ -36,6 +37,15 @@ class EmailTemplates
     {
         return $this->hydrator->hydrate(EmailTemplate::class, $this->repository->getTemplateById($id));
     }
+
+    /**
+     * @return EmailTemplate[]
+     */
+    public function getTemplatesByFilter(EmailTemplateFilter $filter): array
+    {
+        return $this->hydrator->hydrateSet(EmailTemplate::class, $this->repository->getEmailTemplatesByFilter($filter));
+    }
+
 
     public function getBlockTypeById(int $id): ?EmailTemplateBlockType
     {

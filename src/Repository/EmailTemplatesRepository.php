@@ -7,6 +7,7 @@ use Pantono\Email\Model\EmailTemplateBlockType;
 use Pantono\Email\Model\EmailTemplate;
 use Pantono\Contracts\Locator\UserInterface;
 use Pantono\Email\Model\EmailTemplateBlock;
+use Pantono\Email\Filter\EmailTemplateFilter;
 
 class EmailTemplatesRepository extends MysqlRepository
 {
@@ -101,5 +102,23 @@ class EmailTemplatesRepository extends MysqlRepository
     {
         $this->getDb()->delete('email_mapping', ['type_name=?', $type]);
         $this->getDb()->insert('email_mapping', ['type_name' => $type, 'template_id' => $template->getId()]);
+    }
+
+    public function getEmailTemplatesByFilter(EmailTemplateFilter $filter): array
+    {
+        $select = $this->getDb()->select()->from('email_template');
+
+        if ($filter->getSearch() !== null) {
+            $select->where('(name like ?', '%' . $filter->getSearch() . '%')
+                ->orWhere('description like ?)', '%' . $filter->getSearch() . '%');
+        }
+
+        if ($filter->getCategory() !== null) {
+            $select->where('category=?', $filter->getCategory());
+        }
+
+        $filter->setTotalResults($this->getCount($select));
+        $select->limitPage($filter->getPage(), $filter->getPerPage());
+        return $this->getDb()->fetchAll($select);
     }
 }
