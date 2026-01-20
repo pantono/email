@@ -2,11 +2,11 @@
 
 namespace Pantono\Email\Repository;
 
-use Pantono\Database\Repository\MysqlRepository;
+use Pantono\Database\Repository\DefaultRepository;
 use Pantono\Email\Model\EmailSend;
 use Pantono\Email\Model\EmailMessage;
 
-class EmailRepository extends MysqlRepository
+class EmailRepository extends DefaultRepository
 {
     public function getEmailMessageById(int $id): ?array
     {

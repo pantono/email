@@ -2,7 +2,7 @@
 
 namespace Pantono\Email\Repository;
 
-use Pantono\Database\Repository\MysqlRepository;
+use Pantono\Database\Repository\DefaultRepository;
 use Pantono\Email\Model\EmailTemplateBlockType;
 use Pantono\Email\Model\EmailTemplate;
 use Pantono\Contracts\Locator\UserInterface;
@@ -10,7 +10,7 @@ use Pantono\Email\Model\EmailTemplateBlock;
 use Pantono\Email\Filter\EmailTemplateFilter;
 use Pantono\Email\Filter\EmailTemplateBlockFilter;
 
-class EmailTemplatesRepository extends MysqlRepository
+class EmailTemplatesRepository extends DefaultRepository
 {
     public function getTemplateById(int $id): ?array
     {
@@ -43,7 +43,7 @@ class EmailTemplatesRepository extends MysqlRepository
 
     public function addHistoryToBlock(EmailTemplateBlockType $block, UserInterface $user, string $entry): void
     {
-        $this->getDb()->insert('email_template_blocK_history', [
+        $this->getDb()->insert('email_template_block_history', [
             'block_id' => $block->getId(),
             'user_id' => $user->getId(),
             'entry' => $entry

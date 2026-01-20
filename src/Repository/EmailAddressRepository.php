@@ -2,10 +2,10 @@
 
 namespace Pantono\Email\Repository;
 
-use Pantono\Database\Repository\MysqlRepository;
+use Pantono\Database\Repository\DefaultRepository;
 use Pantono\Email\Model\EmailAddress;
 
-class EmailAddressRepository extends MysqlRepository
+class EmailAddressRepository extends DefaultRepository
 {
     public function getEmailAddressByEmail(string $email): ?array
     {
