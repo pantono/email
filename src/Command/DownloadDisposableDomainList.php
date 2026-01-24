@@ -18,7 +18,7 @@ class DownloadDisposableDomainList extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure():void
     {
         $this->setName('email:download-disposable-list')
             ->addOption('list', 'l', InputArgument::OPTIONAL, 'URL of the list to synchronise', EmailAddresses::DISPOSABLE_LIST);
