@@ -18,7 +18,7 @@
     "twig/inky-extra": "^3.8",
     "twig/cssinliner-extra": "^3.8",
     "pantono/config": "^1.0",
-    "robmorgan/phinx": "^0.16.0",
+    "pantono/phinx": "^0.16.0",
     "egulias/email-validator": "^4.0"
   },
   "require-dev": {
