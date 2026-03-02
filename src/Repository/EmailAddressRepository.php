@@ -28,7 +28,7 @@ class EmailAddressRepository extends DefaultRepository
 
     public function getConfig(): array
     {
-        return $this->selectSingleRowFromQuery($this->getDb()->select()->from('email_config'));
+        return $this->getDb()->fetchRow($this->getDb()->select('email_config.*')->from('email_config'));
     }
 
     public function getDisposableEmailDomain(string $domain): ?array

@@ -20,16 +20,6 @@ class EmailRepository extends DefaultRepository
 
     public function saveEmailSend(EmailSend $send): void
     {
-        $data = [
-            'email_message_id' => $send->getMessage()->getId(),
-            'message_id' => $send->getMessageId(),
-            'to_address' => $send->getToAddress(),
-            'to_name' => $send->getToName(),
-            'date_sent' => $send->getDateSent()?->format('Y-m-d H:i:s'),
-            'status' => $send->getStatus(),
-            'error_message' => $send->getErrorMessage(),
-            'tracking_key' => $send->getTrackingKey()
-        ];
         $id = $this->insertOrUpdate('email_send', 'id', $send->getId(), $send->getAllData());
         if ($id) {
             $send->setId($id);
@@ -38,15 +28,7 @@ class EmailRepository extends DefaultRepository
 
     public function saveMessage(EmailMessage $message): void
     {
-        $data = [
-            'from_address' => $message->getFromAddress(),
-            'from_name' => $message->getFromName(),
-            'subject' => $message->getSubject(),
-            'date_added' => $message->getDateAdded()->format('Y-m-d H:i:s'),
-            'text_message' => $message->getTextMessage(),
-            'html_message' => $message->getHtmlMessage()
-        ];
-        $id = $this->insertOrUpdate('email_message', 'id', $message->getId(), $data);
+        $id = $this->insertOrUpdate('email_message', 'id', $message->getId(), $message->getAllData());
         if ($id) {
             $message->setId($id);
         }
@@ -71,9 +53,9 @@ class EmailRepository extends DefaultRepository
         return $this->selectSingleRow('email_status', 'id', $id);
     }
 
-    public function getConfig():?array
+    public function getConfig(): ?array
     {
         $select = $this->getDb()->select()->from('email_config');
-        return $this->selectSingleRowFromQuery($select);
+        return $this->getDb()->fetchRow($select);
     }
 }

@@ -92,11 +92,12 @@ class EmailTemplatesRepository extends DefaultRepository
 
     public function getTemplateForType(string $typeName): ?array
     {
-        $select = $this->getDb()->select()->from('email_template')
-            ->joinInner('email_mapping', 'email_mapping.template_id=email_template.id', [])
-            ->where('email_mapping.type_name=?', $typeName);
+        $select = $this->getDb()->select('t.*')->from('email_template', 't')
+            ->innerJOin('t', 'email_mapping', 'm', 'm.template_id=t.id')
+            ->where('email_mapping.type_name=:type_name')
+            ->setParameter('type_name', $typeName);
 
-        return $this->selectSingleRowFromQuery($select);
+        return $this->getDb()->fetchRow($select);
     }
 
     public function saveMappingForType(string $type, EmailTemplate $template): void
@@ -107,42 +108,44 @@ class EmailTemplatesRepository extends DefaultRepository
 
     public function getEmailTemplatesByFilter(EmailTemplateFilter $filter): array
     {
-        $select = $this->getDb()->select()->from('email_template');
+        $select = $this->getDb()->select('et.*')->from('email_template', 'et');
 
         if ($filter->getSearch() !== null) {
-            $select->where('(name like ?', '%' . $filter->getSearch() . '%')
-                ->orWhere('description like ?)', '%' . $filter->getSearch() . '%');
+            $select->where('(et.name like :search or et.description like :search')
+                ->setParameter('search', '%' . $filter->getSearch() . '%');
         }
 
         if ($filter->getCategory() !== null) {
-            $select->where('category=?', $filter->getCategory());
+            $select->where('category=:category')
+                ->setParameter('category', $filter->getCategory());
         }
 
-        $filter->setTotalResults($this->getCount($select));
-        $select->limitPage($filter->getPage(), $filter->getPerPage());
+        $this->applyCountAndLimit($select, $filter);
+
         return $this->getDb()->fetchAll($select);
     }
 
     public function getEmailTemplateBlockTypesByFilter(EmailTemplateBlockFilter $filter): array
     {
-        $select = $this->getDb()->select()->from('email_template_block_type');
+        $select = $this->getDb()->select('bt.*')->from('email_template_block_type', 'bt');
 
         if ($filter->getSearch() !== null) {
-            $select->where('(name like ?', '%' . $filter->getSearch() . '%')
-                ->orWhere('description like ?)', '%' . $filter->getSearch() . '%');
+            $select->where('(bt.name like :search or bt.description like :search)')
+                ->setParameter(':search', '%' . $filter->getSearch() . '%');
         }
 
         if ($filter->getCategory() !== null) {
-            $select->where('category=?', $filter->getCategory());
+            $select->where('category=:category')
+                ->setParameter(':category', $filter->getCategory());
         }
 
         if ($filter->getContentSearch() !== null) {
-            $select->where('template like ?', '%' . $filter->getContentSearch() . '%');
+            $select->where('template like :content_search')
+                ->setParameter(':content_search', '%' . $filter->getContentSearch() . '%');
         }
 
-        $filter->setTotalResults($this->getCount($select));
-
-        $select->limitPage($filter->getPage(), $filter->getPerPage());
+        $this->applyCountAndLimit($select, $filter);
+        
         return $this->getDb()->fetchAll($select);
     }
 }
