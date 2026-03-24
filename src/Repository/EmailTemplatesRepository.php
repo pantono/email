@@ -94,7 +94,7 @@ class EmailTemplatesRepository extends DefaultRepository
     {
         $select = $this->getDb()->select('t.*')->from('email_template', 't')
             ->innerJOin('t', 'email_mapping', 'm', 'm.template_id=t.id')
-            ->where('email_mapping.type_name=:type_name')
+            ->where('m.type_name=:type_name')
             ->setParameter('type_name', $typeName);
 
         return $this->getDb()->fetchRow($select);
@@ -145,7 +145,7 @@ class EmailTemplatesRepository extends DefaultRepository
         }
 
         $this->applyCountAndLimit($select, $filter);
-        
+
         return $this->getDb()->fetchAll($select);
     }
 }
