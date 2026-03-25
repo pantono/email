@@ -12,18 +12,12 @@ class EmailMessage implements SavableInterface
     use SavableModel;
 
     private ?int $id = null;
+    private \DateTimeInterface $dateAdded;
     private string $fromAddress;
     private string $fromName;
     private string $subject;
-    private \DateTimeInterface $dateAdded;
     private string $textMessage;
     private string $htmlMessage;
-    private int $barId = 0;
-    /**
-     * @hydrator RbgEmail::getSendsForEmail
-     * @var EmailSend[]
-     */
-    private array $sends = [];
 
     public function getId(): ?int
     {
@@ -43,26 +37,6 @@ class EmailMessage implements SavableInterface
     public function setDateAdded(\DateTimeInterface $dateAdded): void
     {
         $this->dateAdded = $dateAdded;
-    }
-
-    public function getBarId(): int
-    {
-        return $this->barId;
-    }
-
-    public function setBarId(int $barId): void
-    {
-        $this->barId = $barId;
-    }
-
-    public function getSends(): array
-    {
-        return $this->sends;
-    }
-
-    public function setSends(array $sends): void
-    {
-        $this->sends = $sends;
     }
 
     public function createSymfonyMessage(): Email
@@ -131,7 +105,6 @@ class EmailMessage implements SavableInterface
         $send->setToAddress($to);
         $send->setTrackingKey(uniqid());
         $send->setToName($toName ?? null);
-        $this->sends[] = $send;
 
         return $send;
     }
