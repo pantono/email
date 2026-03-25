@@ -4,9 +4,13 @@ namespace Pantono\Email\Model;
 
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
+use Pantono\Contracts\Application\Interfaces\SavableInterface;
+use Pantono\Database\Traits\SavableModel;
 
-class EmailMessage
+class EmailMessage implements SavableInterface
 {
+    use SavableModel;
+
     private ?int $id = null;
     private string $fromAddress;
     private string $fromName;
