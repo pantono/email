@@ -55,7 +55,7 @@ class EmailRepository extends DefaultRepository
 
     public function getConfig(): ?array
     {
-        $select = $this->getDb()->select()->from('email_config');
+        $select = $this->getDb()->select('c.*')->from('email_config', 'c');
         return $this->getDb()->fetchRow($select);
     }
 }
