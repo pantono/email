@@ -102,7 +102,7 @@ class EmailTemplatesRepository extends DefaultRepository
 
     public function saveMappingForType(string $type, EmailTemplate $template): void
     {
-        $this->getDb()->delete('email_mapping', ['type_name=?', $type]);
+        $this->getDb()->delete('email_mapping', ['type_name' => $type]);
         $this->getDb()->insert('email_mapping', ['type_name' => $type, 'template_id' => $template->getId()]);
     }
 
