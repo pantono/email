@@ -3,19 +3,20 @@
 namespace Pantono\Email\Model;
 
 use Pantono\Contracts\Attributes\Filter;
-use Pantono\Contracts\Attributes\Locator;
-use Pantono\Email\EmailTemplates;
 use Pantono\Contracts\Attributes\FieldName;
 use Pantono\Database\Traits\SavableModel;
 use Twig\Environment;
+use Pantono\Contracts\Attributes\DatabaseTable;
+use Pantono\Contracts\Attributes\Database\OneToOne;
 
+#[DatabaseTable('email_template_block')]
 class EmailTemplateBlock
 {
     use SavableModel;
 
     private ?int $id = null;
     private int $templateId;
-    #[Locator(methodName: 'getBlockTypeById', className: EmailTemplates::class), FieldName('block_type_id')]
+    #[OneToOne(targetModel: EmailTemplateBlockType::class), FieldName('block_type_id')]
     private ?EmailTemplateBlockType $blockType = null;
     private int $displayOrder;
     #[Filter('json_decode')]

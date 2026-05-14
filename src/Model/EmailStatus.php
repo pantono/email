@@ -3,7 +3,9 @@
 namespace Pantono\Email\Model;
 
 use Pantono\Database\Traits\SavableModel;
+use Pantono\Contracts\Attributes\DatabaseTable;
 
+#[DatabaseTable('email_status')]
 class EmailStatus
 {
     use SavableModel;

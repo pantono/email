@@ -3,12 +3,11 @@
 namespace Pantono\Email\Model;
 
 use Pantono\Database\Traits\SavableModel;
-use Pantono\Contracts\Locator\UserInterface;
-use Pantono\Contracts\Attributes\Locator;
-use Pantono\Email\EmailTemplates;
-use Pantono\Contracts\Attributes\FieldName;
 use Pantono\Contracts\Attributes\Filter;
+use Pantono\Contracts\Attributes\DatabaseTable;
+use Pantono\Contracts\Attributes\Database\OneToMany;
 
+#[DatabaseTable('email_template')]
 class EmailTemplate
 {
     use SavableModel;
@@ -24,7 +23,7 @@ class EmailTemplate
     /**
      * @var EmailTemplateBlock[]
      */
-    #[Locator(methodName: 'getBlocksForTemplate', className: EmailTemplates::class), FieldName('$this')]
+    #[OneToMany(targetModel: EmailTemplateBlock::class, mappedBy: 'template_id')]
     private array $blocks = [];
 
     public function getId(): ?int

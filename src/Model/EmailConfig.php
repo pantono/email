@@ -2,6 +2,8 @@
 
 namespace Pantono\Email\Model;
 
+use Pantono\Contracts\Attributes\DatabaseTable;
+
 class EmailConfig
 {
     private bool $checkDns;

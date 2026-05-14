@@ -4,7 +4,9 @@ namespace Pantono\Email\Model;
 
 use Pantono\Contracts\Attributes\Filter;
 use Pantono\Database\Traits\SavableModel;
+use Pantono\Contracts\Attributes\DatabaseTable;
 
+#[DatabaseTable('email_template_block_field')]
 class EmailTemplateBlockField
 {
     use SavableModel;

@@ -3,7 +3,9 @@
 namespace Pantono\Email\Model;
 
 use Pantono\Email\EmailAddresses;
+use Pantono\Contracts\Attributes\DatabaseTable;
 
+#[DatabaseTable('email_address')]
 class EmailAddress
 {
     private ?int $id = null;

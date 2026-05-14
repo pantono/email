@@ -4,9 +4,10 @@ namespace Pantono\Email\Model;
 
 use Pantono\Contracts\Attributes\Filter;
 use Pantono\Database\Traits\SavableModel;
-use Pantono\Contracts\Attributes\Locator;
-use Pantono\Email\EmailTemplates;
+use Pantono\Contracts\Attributes\DatabaseTable;
+use Pantono\Contracts\Attributes\Database\OneToMany;
 
+#[DatabaseTable('email_template_block_type')]
 class EmailTemplateBlockType
 {
     use SavableModel;
@@ -24,7 +25,7 @@ class EmailTemplateBlockType
     /**
      * @var EmailTemplateBlockField[]
      */
-    #[Locator(methodName: 'getFieldsForBlockType', className: EmailTemplates::class)]
+    #[OneToMany(targetModel: EmailTemplateBlockField::class, mappedBy: 'block_type_id')]
     private array $fields = [];
 
     public function getId(): ?int

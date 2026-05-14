@@ -5,25 +5,26 @@ namespace Pantono\Email\Model;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email as SymfonyModel;
 use Pantono\Database\Traits\SavableModel;
-use Pantono\Contracts\Attributes\Locator;
 use Pantono\Contracts\Attributes\FieldName;
 use Pantono\Contracts\Attributes\Lazy;
 use Pantono\Contracts\Attributes\NoSave;
-use Pantono\Email\Email;
+use Pantono\Contracts\Attributes\DatabaseTable;
+use Pantono\Contracts\Attributes\Database\OneToOne;
 
+#[DatabaseTable('email_send')]
 class EmailSend
 {
     use SavableModel;
 
     private ?int $id = null;
     private int $emailMessageId;
-    #[Locator(methodName: 'getEmailMessageById', className: Email::class), FieldName('email_message_id'), Lazy, NoSave]
+    #[OneToOne(targetModel: EmailMessage::class), FieldName('email_message_id'), Lazy, NoSave]
     private ?EmailMessage $message = null;
     private string $messageId;
     private string $toAddress;
     private string $toName;
     private ?\DateTimeImmutable $dateSent = null;
-    #[Locator(methodName: 'getStatusById', className: Email::class)]
+    #[OneToOne(targetModel: EmailStatus::class), FieldName('status_id')]
     private ?EmailStatus $status = null;
     private ?string $errorMessage = null;
     private string $trackingKey;
