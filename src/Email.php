@@ -146,6 +146,7 @@ class Email
                 $send->setErrorMessage($e->getMessage());
             }
             $this->repository->saveEmailSend($send);
+            $email->addSend($send);
             $postSendEvent = new PostEmailSendEvent();
             $postSendEvent->setSend($send);
             $this->dispatcher->dispatch($postSendEvent);

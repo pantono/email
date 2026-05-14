@@ -22,6 +22,10 @@ class MessageGenerator
 
     private string $renderedText;
     private string $renderedHtml;
+    /**
+     * @var EmailSend[]
+     */
+    private array $sends = [];
 
     private ?EmailMessage $message = null;
 
@@ -168,5 +172,16 @@ class MessageGenerator
     {
         $this->renderedHtml = $renderedHtml;
         return $this;
+    }
+
+    public function addSend(EmailSend $send): self
+    {
+        $this->sends[] = $send;
+        return $this;
+    }
+
+    public function getSends(): array
+    {
+        return $this->sends;
     }
 }
