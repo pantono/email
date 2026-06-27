@@ -162,4 +162,9 @@ class EmailTemplatesRepository extends DefaultRepository
 
         return $this->getDb()->fetchAll($select);
     }
+
+    public function getAllMappings(): array
+    {
+        return $this->selectAll('email_mapping');
+    }
 }

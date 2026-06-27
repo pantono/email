@@ -18,6 +18,7 @@ use Pantono\Email\Event\PostEmailBlockTypeSaveEvent;
 use Pantono\Email\Model\EmailTemplateBlock;
 use Pantono\Email\Filter\EmailTemplateFilter;
 use Pantono\Email\Filter\EmailTemplateBlockFilter;
+use Pantono\Email\Model\EmailTemplateMapping;
 
 class EmailTemplates
 {
@@ -160,5 +161,13 @@ class EmailTemplates
     public function saveTemplateMapping(string $type, EmailTemplate $template): void
     {
         $this->repository->saveMappingForType($type, $template);
+    }
+
+    /**
+     * @return EmailTemplateMapping[]
+     */
+    public function getAllMappings(): array
+    {
+        return $this->hydrator->hydrateSet(EmailTemplateMapping::class, $this->repository->getAllMappings());
     }
 }
