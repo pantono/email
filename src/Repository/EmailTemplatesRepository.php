@@ -10,6 +10,7 @@ use Pantono\Email\Model\EmailTemplateBlock;
 use Pantono\Email\Filter\EmailTemplateFilter;
 use Pantono\Email\Filter\EmailTemplateBlockFilter;
 use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\ParameterType;
 
 class EmailTemplatesRepository extends DefaultRepository
 {
@@ -121,7 +122,8 @@ class EmailTemplatesRepository extends DefaultRepository
     public function getEmailTemplatesByFilter(EmailTemplateFilter $filter): array
     {
         $select = $this->getDb()->select('et.*')->from('email_template', 'et')
-            ->andWhere('et.deleted=0');
+            ->andWhere('et.deleted=:deleted')
+            ->setParameter('deleted', false, ParameterType::BOOLEAN);
 
         if ($filter->getSearch() !== null) {
             $select->andWhere('(et.name like :search or et.description like :search')
@@ -141,7 +143,8 @@ class EmailTemplatesRepository extends DefaultRepository
     public function getEmailTemplateBlockTypesByFilter(EmailTemplateBlockFilter $filter): array
     {
         $select = $this->getDb()->select('bt.*')->from('email_template_block_type', 'bt')
-            ->andWhere('bt.deleted=0');
+            ->andWhere('bt.deleted=:deleted')
+            ->setParameter('deleted', false, ParameterType::BOOLEAN);
 
         if ($filter->getSearch() !== null) {
             $select->andWhere('(bt.name like :search or bt.description like :search)')
