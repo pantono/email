@@ -9,6 +9,7 @@ use Pantono\Contracts\Locator\UserInterface;
 use Pantono\Email\Model\EmailTemplateBlock;
 use Pantono\Email\Filter\EmailTemplateFilter;
 use Pantono\Email\Filter\EmailTemplateBlockFilter;
+use Doctrine\DBAL\ArrayParameterType;
 
 class EmailTemplatesRepository extends DefaultRepository
 {
@@ -56,10 +57,21 @@ class EmailTemplatesRepository extends DefaultRepository
         if ($id) {
             $emailTemplate->setId($id);
         }
+        $ids = [];
         foreach ($emailTemplate->getBlocks() as $block) {
             $block->setTemplateId($emailTemplate->getId());
             $this->saveTemplateBlock($block);
+            $ids[] = $block->getId();
         }
+        $qbDelete = $this->getDb()->createQueryBuilder()->delete('email_template_block')
+            ->andWhere('template_id=:template_id')
+            ->setParameter('template_id', $emailTemplate->getId());
+
+        if (!empty($ids)) {
+            $qbDelete->andWhere('id not in (:ids)')
+                ->setParameter('ids', $ids, ArrayParameterType::INTEGER);
+        }
+        $qbDelete->executeQuery();
     }
 
     public function saveTemplateBlock(EmailTemplateBlock $block): void
