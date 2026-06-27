@@ -93,8 +93,8 @@ class EmailTemplatesRepository extends DefaultRepository
     public function getTemplateForType(string $typeName): ?array
     {
         $select = $this->getDb()->select('t.*')->from('email_template', 't')
-            ->innerJOin('t', 'email_mapping', 'm', 'm.template_id=t.id')
-            ->where('m.type_name=:type_name')
+            ->innerJoin('t', 'email_mapping', 'm', 'm.template_id=t.id')
+            ->andWhere('m.type_name=:type_name')
             ->setParameter('type_name', $typeName);
 
         return $this->getDb()->fetchRow($select);
@@ -108,15 +108,16 @@ class EmailTemplatesRepository extends DefaultRepository
 
     public function getEmailTemplatesByFilter(EmailTemplateFilter $filter): array
     {
-        $select = $this->getDb()->select('et.*')->from('email_template', 'et');
+        $select = $this->getDb()->select('et.*')->from('email_template', 'et')
+            ->andWhere('et.deleted=0');
 
         if ($filter->getSearch() !== null) {
-            $select->where('(et.name like :search or et.description like :search')
+            $select->andWhere('(et.name like :search or et.description like :search')
                 ->setParameter('search', '%' . $filter->getSearch() . '%');
         }
 
         if ($filter->getCategory() !== null) {
-            $select->where('category=:category')
+            $select->andWhere('category=:category')
                 ->setParameter('category', $filter->getCategory());
         }
 
@@ -127,20 +128,21 @@ class EmailTemplatesRepository extends DefaultRepository
 
     public function getEmailTemplateBlockTypesByFilter(EmailTemplateBlockFilter $filter): array
     {
-        $select = $this->getDb()->select('bt.*')->from('email_template_block_type', 'bt');
+        $select = $this->getDb()->select('bt.*')->from('email_template_block_type', 'bt')
+            ->andWhere('bt.deleted=0');
 
         if ($filter->getSearch() !== null) {
-            $select->where('(bt.name like :search or bt.description like :search)')
+            $select->andWhere('(bt.name like :search or bt.description like :search)')
                 ->setParameter(':search', '%' . $filter->getSearch() . '%');
         }
 
         if ($filter->getCategory() !== null) {
-            $select->where('category=:category')
+            $select->andWhere('category=:category')
                 ->setParameter(':category', $filter->getCategory());
         }
 
         if ($filter->getContentSearch() !== null) {
-            $select->where('template like :content_search')
+            $select->andWhere('template like :content_search')
                 ->setParameter(':content_search', '%' . $filter->getContentSearch() . '%');
         }
 

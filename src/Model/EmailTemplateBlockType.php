@@ -27,6 +27,7 @@ class EmailTemplateBlockType
      */
     #[OneToMany(targetModel: EmailTemplateBlockField::class, mappedBy: 'block_type_id')]
     private array $fields = [];
+    private bool $deleted = false;
 
     public function getId(): ?int
     {
@@ -135,5 +136,15 @@ class EmailTemplateBlockType
             return true;
         }
         return in_array($child, $this->allowedChildren);
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
     }
 }

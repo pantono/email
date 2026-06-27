@@ -25,6 +25,7 @@ class EmailTemplate
      */
     #[OneToMany(targetModel: EmailTemplateBlock::class, mappedBy: 'template_id')]
     private array $blocks = [];
+    private bool $deleted = false;
 
     public function getId(): ?int
     {
@@ -104,6 +105,16 @@ class EmailTemplate
     public function setBlocks(array $blocks): void
     {
         $this->blocks = $blocks;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
     }
 
     public function getMissingContexts(array $contexts): array
