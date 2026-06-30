@@ -6,6 +6,8 @@ use Pantono\Database\Traits\SavableModel;
 use Pantono\Contracts\Attributes\Filter;
 use Pantono\Contracts\Attributes\DatabaseTable;
 use Pantono\Contracts\Attributes\Database\OneToMany;
+use Pantono\Contracts\Attributes\Database\OneToOne;
+use Pantono\Contracts\Attributes\FieldName;
 
 #[DatabaseTable('email_template')]
 class EmailTemplate
@@ -26,6 +28,9 @@ class EmailTemplate
     #[OneToMany(targetModel: EmailTemplateBlock::class, mappedBy: 'template_id')]
     private array $blocks = [];
     private bool $deleted = false;
+    private ?string $content = null;
+    #[OneToOne(targetModel: EmailTemplateType::class), FieldName('type_id')]
+    private ?EmailTemplateType $type = null;
 
     public function getId(): ?int
     {
@@ -115,6 +120,26 @@ class EmailTemplate
     public function setDeleted(bool $deleted): void
     {
         $this->deleted = $deleted;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(?string $content): void
+    {
+        $this->content = $content;
+    }
+
+    public function getType(): ?EmailTemplateType
+    {
+        return $this->type;
+    }
+
+    public function setType(?EmailTemplateType $type): void
+    {
+        $this->type = $type;
     }
 
     public function getMissingContexts(array $contexts): array

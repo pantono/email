@@ -11,7 +11,6 @@ use Pantono\Contracts\Locator\UserInterface;
 use Pantono\Email\Event\PreEmailTemplateSaveEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Pantono\Email\Event\PostEmailTemplateSaveEvent;
-use Twig\Environment;
 use Pantono\Email\Exception\MissingContext;
 use Pantono\Email\Event\PreEmailBlockTypeSaveEvent;
 use Pantono\Email\Event\PostEmailBlockTypeSaveEvent;
@@ -19,20 +18,28 @@ use Pantono\Email\Model\EmailTemplateBlock;
 use Pantono\Email\Filter\EmailTemplateFilter;
 use Pantono\Email\Filter\EmailTemplateBlockFilter;
 use Pantono\Email\Model\EmailTemplateMapping;
+use Pantono\Contracts\Locator\LocatorInterface;
+use Pantono\Email\Model\EmailTemplateType;
+use Pantono\Email\Renderer\AbstractEmailRenderer;
 
 class EmailTemplates
 {
     private EmailTemplatesRepository $repository;
     private Hydrator $hydrator;
     private EventDispatcher $dispatcher;
-    private Environment $twig;
+    private LocatorInterface $locator;
 
-    public function __construct(EmailTemplatesRepository $repository, Hydrator $hydrator, EventDispatcher $dispatcher, Environment $twig)
+    public function __construct(
+        EmailTemplatesRepository $repository,
+        Hydrator                 $hydrator,
+        EventDispatcher          $dispatcher,
+        LocatorInterface         $locator
+    )
     {
         $this->repository = $repository;
         $this->hydrator = $hydrator;
         $this->dispatcher = $dispatcher;
-        $this->twig = $twig;
+        $this->locator = $locator;
     }
 
     public function getTemplateById(int $id): ?EmailTemplate
@@ -122,30 +129,7 @@ class EmailTemplates
         if (!empty($missing)) {
             throw new MissingContext('Cannot render template ' . $template->getName() . ' without contexts: ' . implode(', ', $missing));
         }
-        $content = '';
-        foreach ($template->getBlocks() as $block) {
-            if ($block->getParentBlockId()) {
-                continue;
-            }
-            $content .= $this->renderBlock($block, $template, $context);
-
-        }
-        return $this->twig->render('email/inky-template.twig', ['content' => $content]);
-    }
-
-    public function renderBlock(EmailTemplateBlock $block, EmailTemplate $template, array $context = []): string
-    {
-        $children = '';
-        foreach ($template->getBlocks() as $templateBlock) {
-            if ($templateBlock->getParentBlockId() === $block->getId()) {
-                if (!$block->getBlockType()->isChildAllowed($templateBlock->getBlockType()->getName())) {
-                    throw new \RuntimeException('Block ' . $templateBlock->getBlockType()->getName() . ' is not allowed to be a child of ' . $block->getBlockType()->getName());
-                }
-                $children .= $this->renderBlock($templateBlock, $template, $context);
-            }
-        }
-        $context['children'] = $children;
-        return $block->render($this->twig, $context);
+        return $this->getRenderer($template->getType())->renderTemplate($template, $context);
     }
 
     public function addHistoryToBlock(EmailTemplateBlockType $block, UserInterface $user, string $entry): void
@@ -169,5 +153,19 @@ class EmailTemplates
     public function getAllMappings(): array
     {
         return $this->hydrator->hydrateSet(EmailTemplateMapping::class, $this->repository->getAllMappings());
+    }
+
+    private function getRenderer(EmailTemplateType $type): AbstractEmailRenderer
+    {
+        $renderer = $type->getRendererClass();
+        if (!class_exists($renderer)) {
+            throw new \RuntimeException('E-mail renderer class ' . $renderer . ' does not exist');
+        }
+
+        $class = $this->locator->getClassAutoWire($renderer);
+        if (!$class instanceof AbstractEmailRenderer) {
+            throw new \RuntimeException('E-mail renderer class ' . $renderer . ' does not implement AbstractEmailRenderer');
+        }
+        return $class;
     }
 }

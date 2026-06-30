@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use Phinx\Migration\AbstractMigration;
+use Pantono\Database\Migration\Base\BasePantonoMigration;
 
-final class Email extends AbstractMigration
+final class Email extends BasePantonoMigration
 {
     public function change(): void
     {
-        $this->table('email_disposable_domain', ['id' => false, 'primary_key' => ['domain']])
+        $this->tablePrefix('email_disposable_domain', ['id' => false, 'primary_key' => ['domain']])
             ->addColumn('domain', 'string', ['null' => false])
             ->create();
 
-        $this->table('email_config', ['id' => false])
+        $this->tablePrefix('email_config', ['id' => false])
             ->addColumn('check_dns', 'boolean')
             ->addColumn('check_smtp', 'boolean')
             ->addColumn('check_disposable_domain', 'boolean')
@@ -21,20 +21,20 @@ final class Email extends AbstractMigration
             ->create();
 
         if ($this->isMigratingUp()) {
-            $this->table('email_config')
+            $this->tablePrefix('email_config')
                 ->insert([
                     ['check_dns' => 1, 'check_smtp' => 0, 'check_disposable_domain' => 1, 'default_from_name' => 'Pantono', 'default_from_address' => 'noreply@pantono.com']
                 ])->saveData();
         }
 
-        $this->table('email_address')
+        $this->tablePrefix('email_address')
             ->addColumn('email', 'string')
             ->addColumn('valid', 'boolean')
             ->addColumn('last_checked', 'datetime')
             ->addColumn('invalid_reason', 'string', ['null' => true])
             ->create();
 
-        $this->table('email_message')
+        $this->tablePrefix('email_message')
             ->addColumn('date_added', 'datetime')
             ->addColumn('from_address', 'string')
             ->addColumn('from_name', 'string')
@@ -45,7 +45,7 @@ final class Email extends AbstractMigration
             ->addIndex('subject')
             ->create();
 
-        $this->table('email_status')
+        $this->tablePrefix('email_status')
             ->addColumn('name', 'string')
             ->addColumn('bounced', 'boolean')
             ->addColumn('complained', 'boolean')
@@ -53,7 +53,7 @@ final class Email extends AbstractMigration
             ->create();
 
         if ($this->isMigratingUp()) {
-            $this->table('email_status')
+            $this->tablePrefix('email_status')
                 ->insert([
                     ['name' => 'Pending', 'bounced' => 0, 'complained' => 0, 'sent' => 0],
                     ['name' => 'Sent', 'bounced' => 0, 'complained' => 0, 'sent' => 1],
@@ -65,27 +65,26 @@ final class Email extends AbstractMigration
                 ])->saveData();
         }
 
-        $this->table('email_send')
-            ->addColumn('email_message_id', 'integer', ['signed' => false])
+        $this->tablePrefix('email_send')
+            ->addLinkedColumn('email_message_id', $this->addTablePrefix('email_message'), 'id')
             ->addColumn('message_id', 'string')
             ->addColumn('date_sent', 'datetime', ['null' => true])
             ->addColumn('to_address', 'string')
             ->addColumn('to_name', 'string', ['null' => true])
+            ->addLinkedColumn('status', $this->addTablePrefix('email_status'), 'id')
             ->addColumn('status', 'integer', ['signed' => false])
             ->addColumn('error_message', 'string', ['null' => true])
             ->addColumn('tracking_key', 'string')
-            ->addForeignKey('status', 'email_status', 'id')
             ->addForeignKey('email_message_id', 'email_message', 'id')
             ->create();
 
-        $this->table('email_send_log')
-            ->addColumn('email_send_id', 'integer', ['signed' => false])
+        $this->tablePrefix('email_send_log')
+            ->addLinkedColumn('email_send_id', $this->addTablePrefix('email_send'), 'id')
             ->addColumn('date', 'datetime')
             ->addColumn('entry', 'string')
-            ->addForeignKey('email_send_id', 'email_send', 'id')
             ->create();
 
-        $this->table('email_template_block_type')
+        $this->tablePrefix('email_template_block_type')
             ->addColumn('name', 'string')
             ->addColumn('description', 'string', ['null' => true])
             ->addColumn('category', 'string')  // For grouping blocks: Layout, Content, Interactive etc.
@@ -96,8 +95,8 @@ final class Email extends AbstractMigration
             ->addColumn('max_children', 'integer', ['null' => true])   // Maximum number of child blocks allowed
             ->create();
 
-        $this->table('email_template_block_field')
-            ->addColumn('block_type_id', 'integer', ['signed' => false])
+        $this->tablePrefix('email_template_block_field')
+            ->addLinkedColumn('block_type_id', $this->addTablePrefix('email_template_block_type'), 'id')
             ->addColumn('name', 'string')      // e.g., 'content', 'bgcolor', 'align'
             ->addColumn('label', 'string')     // Human readable label
             ->addColumn('type', 'string')      // text, number, color, select, etc.
@@ -106,10 +105,9 @@ final class Email extends AbstractMigration
             ->addColumn('options', 'json', ['null' => true])  // For select/radio fields
             ->addColumn('validation_rules', 'json', ['null' => true])
             ->addColumn('display_order', 'integer', ['default' => 0])
-            ->addForeignKey('block_type_id', 'email_template_block_type', 'id')
             ->create();
 
-        $this->table('email_template')
+        $this->tablePrefix('email_template')
             ->addColumn('name', 'string')
             ->addColumn('description', 'string', ['null' => true])
             ->addColumn('category', 'string', ['null' => true])
@@ -118,38 +116,31 @@ final class Email extends AbstractMigration
             ->addColumn('required_context', 'json')//Array of required context variables, order/user/product etc
             ->create();
 
-        $this->table('email_template_history')
-            ->addColumn('template_id', 'integer', ['signed' => false])
+        $this->tablePrefix('email_template_history')
+            ->addLinkedColumn('template_id', $this->addTablePrefix('email_template'), 'id')
             ->addColumn('date', 'text')
-            ->addColumn('user_id', 'integer', ['signed' => false])
+            ->addLinkedColumn('user_id', $this->addTablePrefix('user'), 'id')
             ->addColumn('entry', 'string')
-            ->addForeignKey('template_id', 'email_template', 'id')
-            ->addForeignKey('user_id', 'user', 'id')
             ->create();
 
-        $this->table('email_template_block_history')
-            ->addColumn('block_type_id', 'integer', ['signed' => false])
+        $this->tablePrefix('email_template_block_history')
+            ->addLinkedColumn('block_type_id', $this->addTablePrefix('email_template_block_type'), 'id')
             ->addColumn('date', 'text')
-            ->addColumn('user_id', 'integer', ['signed' => false])
+            ->addLinkedColumn('user_id', $this->addTablePrefix('user'), 'id')
             ->addColumn('entry', 'string')
-            ->addForeignKey('block_type_id', 'email_template_block_type', 'id')
-            ->addForeignKey('user_id', 'user', 'id')
             ->create();
 
-        $this->table('email_template_block')
-            ->addColumn('template_id', 'integer', ['signed' => false])
-            ->addColumn('block_type_id', 'integer', ['signed' => false])
-            ->addColumn('parent_block_id', 'integer', ['null' => true, 'signed' => false])
+        $this->tablePrefix('email_template_block')
+            ->addLinkedColumn('template_id', $this->addTablePrefix('email_template'), 'id')
+            ->addLinkedColumn('block_type_id', $this->addTablePrefix('email_template_block_type'), 'id')
+            ->addLinkedColumn('parent_block_id', $this->addTablePrefix('email_template_block'), 'id', ['null' => true])
             ->addColumn('display_order', 'integer')
             ->addColumn('field_values', 'json')  // Stores all field values for this block instance
-            ->addForeignKey('template_id', 'email_template', 'id')
-            ->addForeignKey('block_type_id', 'email_template_block_type', 'id')
-            ->addForeignKey('parent_block_id', 'email_template_block', 'id')
             ->create();
 
         if ($this->isMigratingUp()) {
             // Insert some default block types
-            $this->table('email_template_block_type')
+            $this->tablePrefix('email_template_block_type')
                 ->insert([
                     [
                         'name' => 'container',
@@ -193,10 +184,9 @@ final class Email extends AbstractMigration
                 ->save();
         }
 
-        $this->table('email_mapping', ['id' => false])
+        $this->tablePrefix('email_mapping', ['id' => false])
             ->addColumn('type_name', 'string')
-            ->addColumn('template_id', 'integer', ['signed' => false])
-            ->addForeignKey('template_id', 'email_template', 'id')
+            ->addLinkedColumn('template_id', $this->addTablePrefix('email_template'), 'id')
             ->addIndex('type_name', ['unique' => true])
             ->create();
     }

@@ -84,7 +84,7 @@ class EmailTemplateHistoryEvents implements EventSubscriberInterface
     private function getUser(): UserInterface
     {
         /**
-         * @var $user UserInterface
+         * @var UserInterface
          */
         return $this->securityContext->get('user');
     }
