@@ -18,8 +18,3 @@ EmailValidator:
   class: Egulias\EmailValidator\EmailValidator
 EmailTemplates:
   class: Pantono\Email\EmailTemplates
-  parameters:
-    - :Pantono\Email\Repository\EmailTemplatesRepository
-    - "@Hydrator"
-    - "@EventDispatcher"
-    - "@TwigEmail"
