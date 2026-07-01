@@ -21,7 +21,7 @@ final class EmailTemplateRenderTypeMigration extends BasePantonoMigration
         ]);
 
         $this->tablePrefix('email_template')
-            ->addLinkedColumn('type_id', $this->addTablePrefix('email_template_type'), 'id', ['default' => 1])
+            ->addLinkedColumn('type_id', $this->addTablePrefix('email_template_type'), 'id', ['default' => 1, 'signed' => false])
             ->addColumn('content', 'text', ['null' => true])
             ->addColumn('meta', 'json', ['null' => true])
             ->update();
