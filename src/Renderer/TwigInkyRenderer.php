@@ -4,12 +4,13 @@ namespace Pantono\Email\Renderer;
 
 use Pantono\Email\Model\EmailTemplate;
 use Twig\Environment;
+use Pantono\Contracts\Attributes\ServiceName;
 
 class TwigInkyRenderer extends AbstractEmailRenderer
 {
     private Environment $twig;
 
-    public function __construct(Environment $twig)
+    public function __construct(#[ServiceName('TwigEmail')] Environment $twig)
     {
         $this->twig = $twig;
     }
