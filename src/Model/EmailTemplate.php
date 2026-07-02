@@ -29,6 +29,8 @@ class EmailTemplate
     private array $blocks = [];
     private bool $deleted = false;
     private ?string $content = null;
+    #[Filter('json_decode')]
+    private array $meta = [];
     #[OneToOne(targetModel: EmailTemplateType::class), FieldName('type_id')]
     private ?EmailTemplateType $type = null;
 
@@ -140,6 +142,16 @@ class EmailTemplate
     public function setType(?EmailTemplateType $type): void
     {
         $this->type = $type;
+    }
+
+    public function getMeta(): array
+    {
+        return $this->meta;
+    }
+
+    public function setMeta(array $meta): void
+    {
+        $this->meta = $meta;
     }
 
     public function getMissingContexts(array $contexts): array
