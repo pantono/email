@@ -17,7 +17,7 @@ class HtmlRenderer extends AbstractEmailRenderer
 
     public function renderTemplate(EmailTemplate $template, array $context = []): string
     {
-        $content = $this->twig->render($template->getContent(), $context);
+        $content = $this->twig->render($this->twig->createTemplate($template->getContent()), $context);
         $context['content'] = $content;
         return $this->twig->render('email/html-template.twig', $context);
     }
