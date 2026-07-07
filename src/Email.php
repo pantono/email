@@ -174,9 +174,11 @@ class Email
 
     public function renderEmail(MessageGenerator $email): void
     {
-        $htmlContent = $this->templates->renderTemplate($email->getTemplate(), $email->getContext());
-        $email->setRenderedHtml($htmlContent);
-        $textContent = $this->generatePlainText($htmlContent);
+        if (!$email->getRenderedHtml()) {
+            $htmlContent = $this->templates->renderTemplate($email->getTemplate(), $email->getContext());
+            $email->setRenderedHtml($htmlContent);
+        }
+        $textContent = $this->generatePlainText($email->getRenderedHtml());
         $email->setRenderedText($textContent);
     }
 
