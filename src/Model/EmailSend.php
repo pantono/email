@@ -24,7 +24,7 @@ class EmailSend
     private string $toAddress;
     private string $toName;
     private ?\DateTimeImmutable $dateSent = null;
-    #[OneToOne(targetModel: EmailStatus::class), FieldName('status_id')]
+    #[OneToOne(targetModel: EmailStatus::class), FieldName('status')]
     private ?EmailStatus $status = null;
     private ?string $errorMessage = null;
     private string $trackingKey;
