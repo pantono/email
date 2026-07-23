@@ -74,7 +74,6 @@ final class Email extends BasePantonoMigration
             ->addLinkedColumn('status', $this->addTablePrefix('email_status'), 'id')
             ->addColumn('error_message', 'string', ['null' => true])
             ->addColumn('tracking_key', 'string')
-            ->addForeignKey('email_message_id', 'email_message', 'id')
             ->create();
 
         $this->tablePrefix('email_send_log')
