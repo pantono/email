@@ -3,7 +3,7 @@
   "description": "E-mail module for R-Cloud microservices",
   "type": "library",
   "require": {
-    "php": ">=8.5",
+    "php": ">=8.4",
     "pantono/database": "^1.0",
     "aws/aws-sdk-php": "^3.300",
     "twig/twig": "^3",
