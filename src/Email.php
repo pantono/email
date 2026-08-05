@@ -72,20 +72,30 @@ class Email
         return $this->hydrator->hydrateSet(EmailSend::class, $this->repository->getSendsForEmail($message));
     }
 
-    public function createMessageForType(string $type): ?MessageGenerator
+    /**
+     * @param string $type
+     * @param array<string,mixed> $variables
+     * @return MessageGenerator|null
+     */
+    public function createMessageForType(string $type, array $variables = []): ?MessageGenerator
     {
         $template = $this->templates->getTemplateForType($type);
         if (!$template) {
             return null;
         }
-        return $this->createMessageFromTemplate($template);
+        return $this->createMessageFromTemplate($template, $variables);
     }
 
-    public function createMessageFromTemplate(EmailTemplate $template): MessageGenerator
+    /**
+     * @param EmailTemplate $template
+     * @param array<string,mixed> $variables
+     * @return MessageGenerator
+     */
+    public function createMessageFromTemplate(EmailTemplate $template, array $variables = []): MessageGenerator
     {
         $html = $this->templates->renderTemplate($template);
         $text = strip_tags($html);
-        return $this->createMessage()->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
+        return $this->createMessage()->setVariables($variables)->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
     }
 
     public function sendInkyTemplate(string $toAddress, string $toName, string $inkyTemplate, array $variables = [], ?string $fromAddress = null, ?string $fromName = null): EmailMessage
