@@ -178,6 +178,6 @@ class EmailTemplatesRepository extends DefaultRepository
 
     public function getActiveEmailTemplateTypes(): array
     {
-        return $this->selectRowByValues('email_template_type', ['enabled' => false]);
+        return $this->selectRowsByValues('email_template_type', ['enabled' => false]);
     }
 }
