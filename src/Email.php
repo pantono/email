@@ -16,6 +16,7 @@ use Pantono\Email\Event\PreEmailSendEvent;
 use Pantono\Email\Event\PostEmailSendEvent;
 use Pantono\Email\Model\EmailStatus;
 use Pantono\Email\Model\EmailTemplate;
+use Pantono\Queue\QueueManager;
 
 class Email
 {
@@ -32,6 +33,7 @@ class Email
     public const STATUS_HARD_BOUNCE = 5;
     public const STATUS_COMPLAINED = 6;
     public const STATUS_ERROR = 7;
+    private QueueManager $queueManager;
 
     public function __construct(
         Mailer          $mailer,
@@ -40,6 +42,7 @@ class Email
         EmailAddresses  $emailAddresses,
         EventDispatcher $dispatcher,
         EmailTemplates  $templates,
+        QueueManager    $queueManager
     )
     {
         $this->mailer = $mailer;
@@ -48,6 +51,7 @@ class Email
         $this->emailAddresses = $emailAddresses;
         $this->dispatcher = $dispatcher;
         $this->templates = $templates;
+        $this->queueManager = $queueManager;
     }
 
     public function getEmailSendById(int $id): ?EmailSend
@@ -110,6 +114,7 @@ class Email
 
     public function sendEmail(MessageGenerator $email): void
     {
+        $config = $this->getEmailConfig();
         $this->validateMessageGenerator($email);
         $this->renderEmail($email);
         $message = $email->generateMessageModel();
@@ -118,6 +123,30 @@ class Email
         if (!$pendingStatus) {
             throw new \RuntimeException('Pending status does not exist');
         }
+        foreach ($email->getToAddresses() as $address) {
+            $send = $message->createEmailSend($address->getAddress(), $address->getName());
+            $send->setDateSent(new \DateTimeImmutable());
+            $send->setStatus($pendingStatus);
+            $mailerSend = $send->createSymfonyModel();
+            $send->setMessageId($mailerSend->generateMessageId());
+            $this->repository->saveEmailSend($send);
+            if ($config['deferred_send'] === false) {
+                $this->sendEmailSend($send);
+            } else {
+                $this->queueEmailSend($send);
+            }
+            $this->repository->saveEmailSend($send);
+            $email->addSend($send);
+        }
+    }
+
+    public function queueEmailSend(EmailSend $send): void
+    {
+        $this->queueManager->createTask('send_email', ['send_id' => $send->getId()]);
+    }
+
+    public function sendEmailSend(EmailSend $send): void
+    {
         $sentStatus = $this->getStatusById(self::STATUS_SENT);
         if (!$sentStatus) {
             throw new \RuntimeException('Sent status does not exist');
@@ -126,31 +155,23 @@ class Email
         if (!$errorStatus) {
             throw new \RuntimeException('Error status does not exist');
         }
-        foreach ($email->getToAddresses() as $address) {
-            $send = $message->createEmailSend($address->getAddress(), $address->getName());
-            $send->setDateSent(new \DateTimeImmutable());
-            $send->setStatus($pendingStatus);
-            $mailerSend = $send->createSymfonyModel();
-            $send->setMessageId($mailerSend->generateMessageId());
-            $this->repository->saveEmailSend($send);
-            $mailerSend->html($this->replaceTracking($message->getHtmlMessage(), $send->getTrackingKey()));
-            try {
-                $mailerSend->ensureValidity();
-                $preSendEvent = new PreEmailSendEvent();
-                $preSendEvent->setSend($send);
-                $this->dispatcher->dispatch($preSendEvent);
-                $this->mailer->send($mailerSend);
-                $send->setStatus($sentStatus);
-            } catch (\Exception $e) {
-                $send->setStatus($errorStatus);
-                $send->setErrorMessage($e->getMessage());
-            }
-            $this->repository->saveEmailSend($send);
-            $email->addSend($send);
-            $postSendEvent = new PostEmailSendEvent();
-            $postSendEvent->setSend($send);
-            $this->dispatcher->dispatch($postSendEvent);
+        $mailerSend = $send->createSymfonyModel();
+        $mailerSend->html($this->replaceTracking($send->getMessage()->getHtmlMessage(), $send->getTrackingKey()));
+        try {
+            $mailerSend->ensureValidity();
+            $preSendEvent = new PreEmailSendEvent();
+            $preSendEvent->setSend($send);
+            $this->dispatcher->dispatch($preSendEvent);
+            $this->mailer->send($mailerSend);
+            $send->setStatus($sentStatus);
+        } catch (\Exception $e) {
+            $send->setStatus($errorStatus);
+            $send->setErrorMessage($e->getMessage());
         }
+        $this->repository->saveEmailSend($send);
+        $postSendEvent = new PostEmailSendEvent();
+        $postSendEvent->setSend($send);
+        $this->dispatcher->dispatch($postSendEvent);
     }
 
     private function validateMessageGenerator(MessageGenerator $email): void
@@ -226,6 +247,7 @@ class Email
                 'check_disposable_domain' => 1,
                 'default_from_name' => 'Pantono',
                 'default_from_address' => 'noreply@pantono.com',
+                'deferred_send' => 0
             ];
         }
         return $config;

@@ -18,6 +18,7 @@ final class Email extends BasePantonoMigration
             ->addColumn('check_disposable_domain', 'boolean')
             ->addColumn('default_from_address', 'string', ['null' => true])
             ->addColumn('default_from_name', 'string', ['null' => true])
+            ->addColumn('deferred_send', 'boolean', ['default' => true])
             ->create();
 
         if ($this->isMigratingUp()) {

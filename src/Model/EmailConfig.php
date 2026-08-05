@@ -2,13 +2,12 @@
 
 namespace Pantono\Email\Model;
 
-use Pantono\Contracts\Attributes\DatabaseTable;
-
 class EmailConfig
 {
     private bool $checkDns;
     private bool $checkSmtp;
     private bool $checkDisposableDomain;
+    private bool $deferredSend;
 
     public function isCheckDns(): bool
     {
@@ -38,5 +37,15 @@ class EmailConfig
     public function setCheckDisposableDomain(bool $checkDisposableDomain): void
     {
         $this->checkDisposableDomain = $checkDisposableDomain;
+    }
+
+    public function isDeferredSend(): bool
+    {
+        return $this->deferredSend;
+    }
+
+    public function setDeferredSend(bool $deferredSend): void
+    {
+        $this->deferredSend = $deferredSend;
     }
 }

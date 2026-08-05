@@ -1,0 +1,3 @@
+send_email:
+  controller: Pantono\Email\Task\DoEmailSend
+  task: send_email
