@@ -2,6 +2,7 @@
   "name": "pantono/email",
   "description": "E-mail module for Pantono",
   "type": "library",
+  "license": "MIT",
   "require": {
     "php": ">=8.4",
     "pantono/database": "^1.0",
