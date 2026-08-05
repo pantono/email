@@ -1,6 +1,6 @@
 {
   "name": "pantono/email",
-  "description": "E-mail module for R-Cloud microservices",
+  "description": "E-mail module for Pantono",
   "type": "library",
   "require": {
     "php": ">=8.4",
