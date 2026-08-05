@@ -112,7 +112,7 @@ class EmailSend
 
     public function createSymfonyModel(): SymfonyModel
     {
-        return $this->message->createSymfonyMessage()->addTo(new Address($this->getToAddress(), $this->getToName()));
+        return $this->getMessage()->createSymfonyMessage()->addTo(new Address($this->getToAddress(), $this->getToName()));
     }
 
     public function getToAddress(): string
