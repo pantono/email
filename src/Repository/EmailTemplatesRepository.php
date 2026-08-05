@@ -170,4 +170,9 @@ class EmailTemplatesRepository extends DefaultRepository
     {
         return $this->selectAll('email_mapping');
     }
+
+    public function getAllEmailTemplateTypes(): array
+    {
+        return $this->selectAll('email_template_type');
+    }
 }

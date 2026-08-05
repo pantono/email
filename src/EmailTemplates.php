@@ -155,6 +155,14 @@ class EmailTemplates
         return $this->hydrator->hydrateSet(EmailTemplateMapping::class, $this->repository->getAllMappings());
     }
 
+    /**
+     * @return EmailTemplateType[]
+     */
+    public function getAllEmailTemplateTypes(): array
+    {
+        return $this->hydrator->hydrateSet(EmailTemplateType::class, $this->repository->getAllEmailTemplateTypes());
+    }
+
     private function getRenderer(EmailTemplateType $type): AbstractEmailRenderer
     {
         $renderer = $type->getRendererClass();
