@@ -20,8 +20,8 @@ class MessageGenerator
     private ?string $subject = null;
     private array $context = [];
 
-    private string $renderedText;
-    private string $renderedHtml;
+    private ?string $renderedText = null;
+    private ?string $renderedHtml = null;
     /**
      * @var EmailSend[]
      */
@@ -152,23 +152,23 @@ class MessageGenerator
         return $this->toAddresses;
     }
 
-    public function getRenderedText(): string
+    public function getRenderedText(): ?string
     {
         return $this->renderedText;
     }
 
-    public function setRenderedText(string $renderedText): MessageGenerator
+    public function setRenderedText(?string $renderedText): MessageGenerator
     {
         $this->renderedText = $renderedText;
         return $this;
     }
 
-    public function getRenderedHtml(): string
+    public function getRenderedHtml(): ?string
     {
         return $this->renderedHtml;
     }
 
-    public function setRenderedHtml(string $renderedHtml): MessageGenerator
+    public function setRenderedHtml(?string $renderedHtml): MessageGenerator
     {
         $this->renderedHtml = $renderedHtml;
         return $this;
