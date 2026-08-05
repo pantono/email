@@ -84,10 +84,9 @@ class EmailSend
         return $this->status;
     }
 
-    public function setStatus(?EmailStatus $status): EmailSend
+    public function setStatus(?EmailStatus $status): void
     {
         $this->status = $status;
-        return $this;
     }
 
     public function getErrorMessage(): ?string
