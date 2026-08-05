@@ -93,7 +93,7 @@ class Email
      */
     public function createMessageFromTemplate(EmailTemplate $template, array $variables = []): MessageGenerator
     {
-        $html = $this->templates->renderTemplate($template);
+        $html = $this->templates->renderTemplate($template, $variables);
         $text = strip_tags($html);
         return $this->createMessage()->setVariables($variables)->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
     }
