@@ -18,3 +18,5 @@ EmailValidator:
   class: Egulias\EmailValidator\EmailValidator
 EmailTemplates:
   class: Pantono\Email\EmailTemplates
+EmailLists:
+  class: Pantono\Email\EmailLists
