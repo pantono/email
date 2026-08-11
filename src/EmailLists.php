@@ -42,13 +42,17 @@ class EmailLists
         $this->repository->saveModel($list);
     }
 
-    public function signupToList(EmailList $list, string $emailAddress, ?string $name = null): EmailListEntry
+    public function signupToList(EmailList $list, string $emailAddress, ?string $name = null, ?string $signupMethod = null): EmailListEntry
     {
+        if (!$signupMethod) {
+            $signupMethod = 'unknown';
+        }
         $entry = new EmailListEntry();
         $entry->setName($name);
         $entry->setEmailAddress($emailAddress);
         $entry->setListId($list->getId());
         $entry->setDateSignedUp(new \DateTime);
+        $entry->setSignupMethod($signupMethod);
         $entry->setVerifyKey(StringUtilities::generateRandomToken(20));
         $entry->setUnsubscribed(false);
         $entry->setVerified(false);
