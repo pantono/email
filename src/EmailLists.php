@@ -10,6 +10,7 @@ use Pantono\Email\Model\EmailListEntry;
 use Pantono\Email\Event\PreEmailListEntrySaveEvent;
 use Pantono\Email\Event\PostEmailListEntrySaveEvent;
 use Pantono\Utilities\StringUtilities;
+use Pantono\Contracts\Locator\UserInterface;
 
 class EmailLists
 {
@@ -42,7 +43,7 @@ class EmailLists
         $this->repository->saveModel($list);
     }
 
-    public function signupToList(EmailList $list, string $emailAddress, ?string $name = null, ?string $signupMethod = null): EmailListEntry
+    public function signupToList(EmailList $list, string $emailAddress, ?string $name = null, ?string $signupMethod = null, ?UserInterface $user = null): EmailListEntry
     {
         if (!$signupMethod) {
             $signupMethod = 'unknown';
@@ -56,6 +57,9 @@ class EmailLists
         $entry->setVerifyKey(StringUtilities::generateRandomToken(20));
         $entry->setUnsubscribed(false);
         $entry->setVerified(false);
+        if ($user !== null) {
+            $entry->setUserId($user->getId());
+        }
         $this->saveEntry($entry);
 
         return $entry;
