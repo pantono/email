@@ -18,7 +18,7 @@ class EmailListEntry implements SavableInterface
     private \DateTimeInterface $dateSignedUp;
     private string $signupMethod;
     private bool $unsubscribed;
-    private ?\DateTimeInterface $unsubscribedDate = null;
+    private ?\DateTimeInterface $dateUnsubscribed = null;
     private ?int $userId = null;
     private bool $verified;
     private string $verifyKey;
@@ -93,14 +93,14 @@ class EmailListEntry implements SavableInterface
         $this->unsubscribed = $unsubscribed;
     }
 
-    public function getUnsubscribedDate(): ?\DateTimeInterface
+    public function getDateUnsubscribed(): ?\DateTimeInterface
     {
         return $this->unsubscribedDate;
     }
 
-    public function setUnsubscribedDate(?\DateTimeInterface $unsubscribedDate): void
+    public function setDateUnsubscribed(?\DateTimeInterface $dateUnsubscribed): void
     {
-        $this->unsubscribedDate = $unsubscribedDate;
+        $this->unsubscribedDate = $dateUnsubscribed;
     }
 
     public function getUserId(): ?int
