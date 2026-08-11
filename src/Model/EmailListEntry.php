@@ -18,7 +18,7 @@ class EmailListEntry implements SavableInterface
     private \DateTimeInterface $dateSignedUp;
     private string $signupMethod;
     private bool $unsubscribed;
-    private ?\DateTimeInterface $unsubscribedDate;
+    private ?\DateTimeInterface $unsubscribedDate = null;
     private ?int $userId = null;
     private bool $verified;
     private string $verifyKey;
