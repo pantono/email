@@ -4,7 +4,9 @@ namespace Pantono\Email\Model;
 
 use Pantono\Contracts\Application\Interfaces\SavableInterface;
 use Pantono\Database\Traits\SavableModel;
+use Pantono\Contracts\Attributes\DatabaseTable;
 
+#[DatabaseTable('email_list_entry')]
 class EmailListEntry implements SavableInterface
 {
     use SavableModel;
