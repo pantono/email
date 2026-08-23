@@ -15,7 +15,7 @@ final class EmailBroadcastSignupMigration extends BasePantonoMigration
             ->create();
 
         $this->tablePrefix('email_list_entry')
-            ->addLinkedColumn('list_id', $this->addTablePrefix('email_list'), 'id')
+            ->addLinkedColumn('list_id', $this->addTablePrefix('email_list'), 'id', ['signed' => false])
             ->addColumn('name', 'string', ['null' => true])
             ->addColumn('email_address', 'string')
             ->addColumn('date_signed_up', 'datetime')
@@ -25,7 +25,7 @@ final class EmailBroadcastSignupMigration extends BasePantonoMigration
             ->addColumn('verify_key', 'string')
             ->addColumn('unsubscribe_key', 'string')
             ->addColumn('date_unsubscribed', 'datetime', ['null' => true])
-            ->addLinkedColumn('user_id', $this->addTablePrefix('user'), 'id', ['null' => true])
+            ->addLinkedColumn('user_id', $this->addTablePrefix('user'), 'id', ['null' => true, 'signed' => false])
             ->addIndex('email_address')
             ->addIndex(['email_address', 'list_id'], ['unique' => true])
             ->create();
