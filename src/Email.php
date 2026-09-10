@@ -95,7 +95,14 @@ class Email
     {
         $html = $this->templates->renderTemplate($template, $variables);
         $text = strip_tags($html);
-        return $this->createMessage()->setVariables($variables)->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
+        return $this->createMessage()->subject($template->getSubject() ?? '')->setVariables($variables)->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
+    }
+
+    public function sendTemplate(EmailTemplate $template, array $variables, string $toAddress, ?string $toName): void
+    {
+        $message = $this->createMessageFromTemplate($template, $variables);
+        $message->to($toAddress, $toName);
+        $this->sendEmail($message);
     }
 
     public function sendInkyTemplate(string $toAddress, string $toName, string $inkyTemplate, array $variables = [], ?string $fromAddress = null, ?string $fromName = null): EmailMessage
@@ -119,7 +126,7 @@ class Email
     public function createMessage(): MessageGenerator
     {
         $config = $this->getEmailConfig();
-        return (new MessageGenerator($this))->from($config['default_from_address'], $config['default_from_name']);
+        return new MessageGenerator($this)->from($config['default_from_address'], $config['default_from_name']);
     }
 
     public function sendEmail(MessageGenerator $email): void

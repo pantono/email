@@ -18,6 +18,7 @@ class EmailTemplate
     private string $name;
     private ?string $description = null;
     private string $category;
+    private ?string $subject = null;
     private \DateTimeInterface $dateCreated;
     private \DateTimeInterface $dateUpdated;
     #[Filter('json_decode')]
@@ -72,6 +73,16 @@ class EmailTemplate
     public function setCategory(string $category): void
     {
         $this->category = $category;
+    }
+
+    public function getSubject(): ?string
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(?string $subject): void
+    {
+        $this->subject = $subject;
     }
 
     public function getDateCreated(): \DateTimeInterface
