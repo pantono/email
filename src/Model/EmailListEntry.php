@@ -95,12 +95,12 @@ class EmailListEntry implements SavableInterface
 
     public function getDateUnsubscribed(): ?\DateTimeInterface
     {
-        return $this->unsubscribedDate;
+        return $this->dateUnsubscribed;
     }
 
     public function setDateUnsubscribed(?\DateTimeInterface $dateUnsubscribed): void
     {
-        $this->unsubscribedDate = $dateUnsubscribed;
+        $this->dateUnsubscribed = $dateUnsubscribed;
     }
 
     public function getUserId(): ?int
