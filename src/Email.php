@@ -98,7 +98,7 @@ class Email
         return $this->createMessage()->subject($template->getSubject() ?? '')->setVariables($variables)->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
     }
 
-    public function sendTemplate(EmailTemplate $template, array $variables, string $toAddress, ?string $toName): MessageGenerator
+    public function sendTemplate(EmailTemplate $template, array $variables, string $toAddress, string $toName = ''): MessageGenerator
     {
         $message = $this->createMessageFromTemplate($template, $variables);
 
@@ -107,7 +107,7 @@ class Email
         return $message;
     }
 
-    public function sendEmailForType(string $type, array $variables, string $toAddress, ?string $toName): MessageGenerator
+    public function sendEmailForType(string $type, array $variables, string $toAddress, string $toName = ''): MessageGenerator
     {
         $message = $this->createMessageForType($type, $variables);
         if ($message === null) {
