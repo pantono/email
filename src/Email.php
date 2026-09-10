@@ -101,6 +101,7 @@ class Email
     public function sendTemplate(EmailTemplate $template, array $variables, string $toAddress, ?string $toName): MessageGenerator
     {
         $message = $this->createMessageFromTemplate($template, $variables);
+
         $message->to($toAddress, $toName);
         $this->sendEmail($message);
         return $message;
@@ -109,6 +110,9 @@ class Email
     public function sendEmailForType(string $type, array $variables, string $toAddress, ?string $toName): MessageGenerator
     {
         $message = $this->createMessageForType($type, $variables);
+        if ($message === null) {
+            throw new \RuntimeException('No email template found for type: ' . $type);
+        }
         $message->to($toAddress, $toName);
         $this->sendEmail($message);
         return $message;
