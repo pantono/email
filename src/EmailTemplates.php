@@ -21,7 +21,6 @@ use Pantono\Email\Model\EmailTemplateMapping;
 use Pantono\Contracts\Locator\LocatorInterface;
 use Pantono\Email\Model\EmailTemplateType;
 use Pantono\Email\Renderer\AbstractEmailRenderer;
-use Pantono\Config\Config;
 
 class EmailTemplates
 {
@@ -29,21 +28,18 @@ class EmailTemplates
     private Hydrator $hydrator;
     private EventDispatcher $dispatcher;
     private LocatorInterface $locator;
-    private Config $config;
 
     public function __construct(
         EmailTemplatesRepository $repository,
         Hydrator                 $hydrator,
         EventDispatcher          $dispatcher,
-        LocatorInterface         $locator,
-        Config                   $config
+        LocatorInterface         $locator
     )
     {
         $this->repository = $repository;
         $this->hydrator = $hydrator;
         $this->dispatcher = $dispatcher;
         $this->locator = $locator;
-        $this->config = $config;
     }
 
     public function getTemplateById(int $id): ?EmailTemplate
@@ -133,7 +129,6 @@ class EmailTemplates
         if (!empty($missing)) {
             throw new MissingContext('Cannot render template ' . $template->getName() . ' without contexts: ' . implode(', ', $missing));
         }
-        $context = $this->addGlobalVariables($context);
         return $this->getRenderer($template->getType())->renderTemplate($template, $context);
     }
 
@@ -188,11 +183,5 @@ class EmailTemplates
             throw new \RuntimeException('E-mail renderer class ' . $renderer . ' does not implement AbstractEmailRenderer');
         }
         return $class;
-    }
-
-    private function addGlobalVariables(...$variables): array
-    {
-        $variables['config'] = $this->config->getApplicationConfig()->toArray();
-        return $variables;
     }
 }
