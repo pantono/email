@@ -83,7 +83,6 @@ class Email
      */
     public function createMessageForType(string $type, array $variables = []): ?MessageGenerator
     {
-        $this->addGlobalVariables($variables);
         $template = $this->templates->getTemplateForType($type);
         if (!$template) {
             return null;
@@ -98,7 +97,6 @@ class Email
      */
     public function createMessageFromTemplate(EmailTemplate $template, array $variables = []): MessageGenerator
     {
-        $this->addGlobalVariables($variables);
         $html = $this->templates->renderTemplate($template, $variables);
         $text = strip_tags($html);
         return $this->createMessage()->subject($template->getSubject() ?? '')->setVariables($variables)->setRenderedHtml($html)->setRenderedText($text)->setTemplate($template);
@@ -106,7 +104,6 @@ class Email
 
     public function sendTemplate(EmailTemplate $template, array $variables, string $toAddress, string $toName = ''): MessageGenerator
     {
-        $this->addGlobalVariables($variables);
         $message = $this->createMessageFromTemplate($template, $variables);
 
         $message->to($toAddress, $toName);
@@ -116,7 +113,6 @@ class Email
 
     public function sendEmailForType(string $type, array $variables, string $toAddress, string $toName = ''): MessageGenerator
     {
-        $this->addGlobalVariables($variables);
         $message = $this->createMessageForType($type, $variables);
         if ($message === null) {
             throw new \RuntimeException('No email template found for type: ' . $type);
@@ -128,7 +124,6 @@ class Email
 
     public function sendInkyTemplate(string $toAddress, string $toName, string $inkyTemplate, array $variables = [], ?string $fromAddress = null, ?string $fromName = null): EmailMessage
     {
-        $this->addGlobalVariables($variables);
         $variables['content'] = $inkyTemplate;
         $email = $this->createMessage()
             ->subject('test')
