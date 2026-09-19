@@ -134,7 +134,7 @@ class EmailTemplatesRepository extends DefaultRepository
             $select->andWhere('category=:category')
                 ->setParameter('category', $filter->getCategory());
         }
-
+        $this->applySort($select, $filter);
         $this->applyCountAndLimit($select, $filter);
 
         return $this->getDb()->fetchAll($select);
