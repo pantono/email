@@ -126,7 +126,7 @@ class EmailTemplatesRepository extends DefaultRepository
             ->setParameter('deleted', false, ParameterType::BOOLEAN);
 
         if ($filter->getSearch() !== null) {
-            $select->andWhere('(et.name like :search or et.description like :search')
+            $select->andWhere('et.name like :search or et.description like :search')
                 ->setParameter('search', '%' . $filter->getSearch() . '%');
         }
 
